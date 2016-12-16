@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<object>
+  <object type="WebPage.Areas.SaleManage.Controllers.CustomerController,WebPage" singleton="false">
+    <property name="CustomerManage" ref="Service.Customer"/>
+    <property name="PlaceInfoManage" ref="Service.PlaceInfo"/>
+
+  </object>
+</object>

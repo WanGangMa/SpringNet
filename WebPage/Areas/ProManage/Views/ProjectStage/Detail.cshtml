@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Domain.PRO_PROJECT_STAGES
+<style type="text/css">
+    .gray-bg {
+        background-color: white;
+    }
+</style>
+@using (Ajax.BeginForm("Save", null, new AjaxOptions()
+                           {
+                               HttpMethod = "Post",
+                               OnBegin = "SubAjax.Loading",
+                               OnComplete = "SubAjax.Complate",
+                               OnFailure = "SubAjax.Failure",
+                               OnSuccess = "SubAjax.Success"
+                           },
+                               new { @class = "form-horizontal dig-from", @role = "form" }))
+{
+    @Html.HiddenFor(p => p.ID)
+    @Html.HiddenFor(p => p.FK_ProjectId)
+    @Html.HiddenFor(p => p.StageStatus)
+    @Html.HiddenFor(p => p.IsOverTime)
+    @Html.HiddenFor(p => p.OverDays)
+    @Html.HiddenFor(p => p.CreateUser)
+    @Html.HiddenFor(p => p.CreateDate)
+    @Html.HiddenFor(p => p.EndDate)
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="row">
+            <div class="ibox-detail-title">
+                <i class="fa fa-pencil-square-o"></i>添加/修改任务
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">任务名称：</label>
+                            <div class="col-xs-8">
+                                @Html.TextBoxFor(p => p.StageTitle, new { @class = "form-control", @placeholder = "请输入任务名称", @datatype = "*", @nullmsg = "请输入任务名称！", @errormsg = "请输入任务名称！" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">任务排序：</label>
+                            <div class="col-xs-8">
+                                @Html.TextBoxFor(p => p.OrderNumber, new { @class = "form-control", @placeholder = "请输入任务排序", @datatype = "n", @nullmsg = "请输入任务排序！", @errormsg = "排序值必须为整数！" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">任务工期：</label>
+                            <div class="col-xs-8">
+                                @Html.TextBoxFor(p => p.StageTimeLimit, new { @class = "form-control", @placeholder = "请输入任务工期（小时）", @datatype = "n", @nullmsg = "请输入任务工期！", @errormsg = "工期必须为整数！" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">需求人数：</label>
+                            <div class="col-xs-8">
+                                @Html.TextBoxFor(p => p.NeedNumber, new { @class = "form-control", @placeholder = "请输入需求人数", @datatype = "n", @nullmsg = "请输入需求人数！", @errormsg = "人数必须为整数！" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">开始时间：</label>
+                            <div class="col-xs-8">
+                                @Html.TextBoxFor(p => p.StartDate, new { @class = "form-control", @placeholder = "请选择项目开始日期", @onclick = "ldate('StartDate','YYYY-MM-DD hh:mm:ss')" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">结束时间：</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="自动计算" disabled="disabled" value="@Model.EndDate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="text-center">
+                    <button class="btn btn-primary btn-save" type="submit"><i class="fa fa-check"></i> <span>确定保存</span></button>
+                    <button class="btn btn-warning" id="btn-dig-close" type="button"><i class="fa fa-reply-all"></i> 取消返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('.form-horizontal').initValidform();
+        });
+    </script>
+}
+

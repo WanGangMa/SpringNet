@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Domain.PRO_PROJECTS
+<style type="text/css">
+    .gray-bg {
+        background-color: white;
+    }
+    .table>tbody>tr>td{border:none;}
+</style>
+ <div class="wrapper wrapper-content animated fadeInUp">
+            <div class="ibox">
+                <div class="ibox-detail-title">
+                    <i class="fa fa-github-square"></i>加入团队
+                </div>
+                <div class="ibox-content">
+                    @{
+                        if (Model.ProjectStatus == ClsDic.DicProject["进行中"] || Model.ProjectStatus == ClsDic.DicProject["延期"] || Model.ProjectStatus == ClsDic.DicProject["已超时"])
+                        {
+                            if (Model.PRO_PROJECT_STAGES != null && Model.PRO_PROJECT_STAGES.Count > 0)
+                            {
+                                    <form action="/Pro/ProjectHome/ApplyJoinTeam" class="form-horizontal dig-from" data-ajax="true" data-ajax-begin="SubAjax.Loading" data-ajax-complete="SubAjax.Complate" data-ajax-failure="SubAjax.Failure" data-ajax-method="Post" data-ajax-success="SubAjax.Success" id="form0" method="post" role="form">
+                                        <div class="row">
+                                            <label class="col-xs-2 control-label">选择阶段：</label>
+                                            <div class="col-xs-10">
+                                                <table class="table table-hover JColResizer">
+                                                    <tbody>
+                                                        @{foreach (var stage in Model.PRO_PROJECT_STAGES.OrderBy(p => p.OrderNumber).ToList())
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <label class="icheck_line">
+                                                                        @{
+                                                            if (stage.PRO_PROJECT_TEAMS.Where(m => m.JionStatus == ClsDic.DicStatus["通过"]).ToList().Count < stage.NeedNumber)
+                                                            {
+                                                                <input type="radio" name="FK_StageId" value="@stage.ID" class="icheck_box" />
+                                                            }
+                                                                        }
+                                                                        <i class="fa fa-github-square text-danger" style="font-size:18px;"></i> @stage.StageTitle
+                                                                    </label>
+                                                                </td>
+                                                                <td class="text-danger">@stage.NeedNumber 人</td>
+                                                                <td class="text-navy">@stage.PRO_PROJECT_TEAMS.Where(m => m.JionStatus == ClsDic.DicStatus["通过"]).ToList().Count 人</td>
+                                                            </tr>
+
+                                                        }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-xs-2 control-label">申请理由：</label>
+                                                    <div class="col-xs-10">
+                                                        <textarea name="ApplyReasons" class="form-control" rows="4" placeholder="请填写申请理由，300字以内" maxlength="300" style="resize:none"></textarea>
+                                                    </div>
+                                                </div>
+                                            <div class="hr-line-dashed"></div>
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-save" type="submit"><i class="fa fa-check"></i> <span>确定保存</span></button>
+                                                <button class="btn btn-warning" id="btn-dig-close" type="button"><i class="fa fa-reply-all"></i> 取消返回</button>
+                                            </div>
+                                            </div>
+                                    </form>
+                            }
+                        }
+                        else
+                        {
+                            <div class=" text-center m-t-md">
+                                <i class="fa fa-github-square" style="color: #c1c3c4; font-size: 184px;"></i><br />
+                                <span style="color: #c1c3c4; font-size: 18px;">项目已结束或团队成员已满</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+

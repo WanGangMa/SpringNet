@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewBag.Title = "Outbox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Common.PageInfo
+<div class="wrapper wrapper-content animated fadeInRight">
+@using (Ajax.BeginForm("Outbox", null, new AjaxOptions() { }, new { @id = "form1", @class = "form-horizontal", @method = "get" }))
+                    {
+        <div class="ibox mail-box-header">
+            <div class="pull-right mail-search">
+                <div class="input-group">
+                    @Html.TextBox("Search", null, new { @class = "input-sm form-control", @placeholder = "搜索邮件标题，收件人等" })
+                    <span class="input-group-btn">
+                        <button type="submit" onclick="submit()" class="btn btn-sm btn-primary"> 搜索</button>
+                    </span>
+                </div>
+            </div>
+            <h2>
+                发件箱 
+            </h2>
+            <div class="mail-tools tooltip-demo m-t-md">
+                @Service.CommonHtmlHelper.PaginationUlPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+                <a class="btn btn-white btn-sm" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="top" title="刷新邮件列表"><i class="fa fa-refresh"></i> 刷新</a>
+                <a class="btn btn-white btn-sm" id="remove" action="remove" data-toggle="tooltip" data-placement="top" title="删除邮件"><i class="fa fa-trash-o"></i></a>
+            </div>
+        </div>
+        <div class="mail-box">
+            <table id="dataTable" class="table table-hover table-mail">
+                <thead>
+                    <tr>
+                        <th class="tn" style="width:50px !important;"><input name="checkall" class="icheck_box" type="checkbox" value=""></th>
+                        <th>收件人</th>
+                        <th>主题</th>
+                        <th></th>
+                        <th class="text-right">时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{foreach (var item in Model.List)
+                    {
+                    <tr class="read">
+                        <td class="tn" style="width:50px !important;">
+                            <input name="checkbox_name" class="icheck_box" type="checkbox" value="@item.ID" />
+                        </td>
+                        <td class="mail-ontact">
+                            @Html.Raw(item.ToUsers)
+                        </td>
+                        <td class="mail-subject">
+                            <a href="/Mail/Mail/ReadMail/@item.ID?box=out" title="@item.MailTitle">@item.MailTitle</a>
+                        </td>
+                        <td class="">@Html.Raw(item.IsAttachement?"<i class=\"fa fa-paperclip text-danger\"></i>":"")</td>
+                        <td class="text-right mail-date">@item.SendDate</td>
+                    </tr>
+                    }
+                    }
+                </tbody>
+            </table>
+        </div>
+    <div class="mail-box-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="dataTables_info">
+                    显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
+                    <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="submit()">
+                        <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
+                        <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                        <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+                        <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
+                    </select> 条记录
+                </div>
+            </div>
+            <div class="col-sm-6">
+                @Service.CommonHtmlHelper.PaginationPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+            </div>
+        </div>
+    </div>
+                    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            //删除发件箱邮件
+            $('#remove').click(function () {
+                var vals = '';
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals += $(this).val() + ',';
+                });
+                if (vals == '' || vals == ',') {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                var msg = "您确定要删除吗？";
+                dig.confirm("邮件删除", msg, function () {
+                    $.post("/Mail/Mail/RemoveOutbox", { idList: vals }, function (res) {
+                        if (res.Status == "y") {
+                            dig.successcallback(res.Msg, function () {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            dig.error(res.Msg);
+                        }
+                    }, "json");
+                });
+            });
+        });       
+    </script>
+}
+
+

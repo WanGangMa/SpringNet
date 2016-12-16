@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+    .gray-bg {
+        background-color: white;
+    }
+    .img-circle{width:30px;height:30px;}
+</style>
+@model Common.PageInfo
+<div class="wrapper wrapper-content  animated fadeInUp">
+    <div class="row">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>团队管理</h5>
+                <div class="ibox-tools">
+                    <a class="btn btn-info btn-xs p210" href="/Pro/Project"><i class="fa fa-reply-all fa-fw"></i> 返回项目列表</a>
+                    <a class="reload-link" style="color: #c4c4c4" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="left" title="刷新">
+                        <i class="fa fa-repeat fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                @using (Ajax.BeginForm("Index", null, new AjaxOptions() { }, new { @id = "form1", @class = "form-horizontal", @method = "get" }))
+                {
+                    <div class="row">
+                        <table id="dataTable" class="table table-striped table-bordered table-hover dataTables-example" style="text-align:center;">
+                            <thead>
+                                <tr>
+                                    <th>申请人</th>
+                                    <th>阶段任务</th>
+                                    <th>剩余人数</th>
+                                    <th>申请时间</th>
+                                    <th>申请理由</th>
+                                    <th>状态</th>
+                                    <th>审核</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{foreach (var item in Model.List)
+                                {
+                                    <tr>
+                                        <td class="text-navy">@Html.Raw(item.UserFace+"&nbsp;"+item.UserName)</td>
+                                        <td class="text-danger">@item.StageTitle</td>
+                                        <td>@item.SurplusNumber 人</td>
+                                        <td>@item.JionDate</td>
+                                        <td>@item.ApplyReasons</td>
+                                        <td class="text-success">@item.Status</td>
+                                        <td>@{
+                                    if (item.JionStatus == ClsDic.DicStatus["等待审核"] && item.SurplusNumber > 0)
+                                    {
+                                        <a class="btn btn-primary btn-xs p210" href="javascript:Audit('@item.ID','@item.UserName')" action="Audit" ><i class="fa fa-check fa-fw"></i> 通过</a>
+    <a class="btn btn-danger btn-xs p210" href="javascript:Refuse('@item.ID','@item.UserName')" action="Refuse"><i class="fa fa-close fa-fw"></i> 拒绝</a>
+                                    }
+}</td>
+                                    </tr>
+                                }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="dataTables_info">
+                                显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
+                                <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="submit()">
+                                    <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
+                                    <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                                    <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+                                    <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
+                                </select> 条记录
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            @Service.CommonHtmlHelper.PaginationPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        //审核通过
+        function Audit(n, y) {
+            var msg = "确定允许" + y + "加入团队吗？";
+            dig.confirm("加入确认", msg, function () {
+                $.post("/Pro/ProjectTeams/Audit", { idList: n }, function (res) {
+                    if (res.Status == "y") {
+                        dig.successcallback(res.Msg, function () {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        dig.error(res.Msg);
+                    }
+                }, "json");
+            });
+        }
+        //拒绝加入
+        function Refuse(n, y) {
+            swal({
+                title: "确定拒绝" + y + "加入团队吗？",
+                text: "请填写拒绝理由:",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,confirmButtonColor: "#DD6B55",
+                animation: "slide-from-top",
+                inputPlaceholder: "拒绝理由（300字以内）"
+            }, function (inputValue) {
+                if (inputValue === false)
+                    return false;
+                if (inputValue === "") {
+                    swal.showInputError("请填写拒绝理由!");
+                    return false
+                }
+                $.post("/Pro/ProjectTeams/Refuse", { idList: n, reason: inputValue }, function (res) {
+                        if (res.Status == "y") {
+                            dig.successcallback(res.Msg, function () {
+                                window.location.reload();
+                            });
+                        }
+                        else {
+                            dig.error(res.Msg);
+                        }
+                    }, "json");
+            });
+        }
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+

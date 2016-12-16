@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Domain.PRO_PROJECT_FILES
+<style type="text/css">
+    .gray-bg {
+        background-color: white;
+    }
+</style>
+@using (Ajax.BeginForm("Save", null, new AjaxOptions()
+                           {
+                               HttpMethod = "Post",
+                               OnBegin = "SubAjax.Loading",
+                               OnComplete = "SubAjax.Complate",
+                               OnFailure = "SubAjax.Failure",
+                               OnSuccess = "SubAjax.Success"
+                           },
+                               new { @class = "form-horizontal dig-from", @role = "form" }))
+{
+    @Html.HiddenFor(p => p.ID)
+    @Html.HiddenFor(p => p.DocStyle)
+    @Html.HiddenFor(p => p.Fk_ForeignId)
+    @Html.HiddenFor(p => p.DocName)
+    @Html.HiddenFor(p => p.DocNewName)
+    @Html.HiddenFor(p => p.DocFileExt)
+    @Html.HiddenFor(p => p.DocSize)
+    @Html.HiddenFor(p => p.UploadDate)
+    @Html.HiddenFor(p => p.CreateUser)
+    @Html.HiddenFor(p => p.CreateIP)
+    @Html.HiddenFor(p=>p.FK_UserId)
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="row">
+            <div class="ibox-detail-title">
+                <i class="fa fa-pencil-square-o"></i>添加/修改项目文档
+            </div>
+            <div class="ibox-content">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">文档：</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            @Html.TextBoxFor(p => p.DocPath, new { @class = "form-control", @placeholder = "请上传文档", @datatype = "*", @nullmsg = "请上传文档！", @errormsg = "请上传文档！" })
+                            <span class="input-group-btn"><button type="button" class="btn btn-primary" id="upfile"><i class="fa fa-file-text"></i> 上传文档</button></span>
+                        </div>
+                    </div>
+                </div>  
+                <div class="hr-line-dashed"></div>
+                <div class="text-center">
+                    <button class="btn btn-primary btn-save" type="submit"><i class="fa fa-check"></i> <span>确定保存</span></button>
+                    <button class="btn btn-warning" id="btn-dig-close" type="button"><i class="fa fa-reply-all"></i> 取消返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('.form-horizontal').initValidform();
+            //上传文档
+            $("#upfile").click(function () {
+                dig.upload($('#DocPath').val(), function () {
+                    var retval = this.returnValue;
+                    if (retval != '') {
+                        var json = JSON.parse(retval);
+                        $('#DocPath').val(json.path) && $("#DocName").val(json.oldname) && $("#DocNewName").val(json.newname) && $("#DocFileExt").val(json.ext) && $("#DocSize").val(json.unitsize);
+                    } else {
+                        $('#DocPath').val('') && $("#DocName").val('') && $("#DocNewName").val('') && $("#DocFileExt").val('') && $("#DocSize").val('');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+
+

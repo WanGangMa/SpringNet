@@ -1,0 +1,279 @@
+﻿
+@{
+    ViewBag.Title = "WriteMail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var content = ViewData["MailContent"] == null ? new Domain.COM_CONTENT() : ViewData["MailContent"] as Domain.COM_CONTENT;
+}
+@model Domain.MAIL_OUTBOX
+<style type="text/css">
+    .Validform_checktip {
+        position: absolute;
+        right: 45px;
+        bottom: 4px;
+        left: auto;
+        z-index: 99;
+        font-weight: 400;
+    }
+
+    #attachments .items {
+        float: left;
+        margin-right: 5px;
+        padding: 5px;
+        background-color: #fcf8e3;
+        color: #8a6d3b;
+    }
+
+        #attachments .items span {
+            margin-left: 5px;
+        }
+
+    .chooseusers {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 9999;
+        background: #FFF;
+        width: 200px;
+        display: none;
+        border: 1px solid #e7eaec;
+        -webkit-box-shadow: 0 1px 22px rgba(95, 99, 99, 0.65);
+        -moz-box-shadow: 0 1px 22px rgba(95, 99, 99, 0.65);
+        box-shadow: 0 1px 22px rgba(95, 99, 99, 0.65);
+    }
+
+        .chooseusers .heading {
+            background: #2f4050;
+            padding: 8px 15px;
+            font-weight: 700;
+            color: #fff;
+            height: 36px;
+        }
+
+    .chat-user.active {
+        background: #dff0d8;
+    }
+</style>
+<link href="/Content/js/tag-editor/tag-deitor.css" rel="stylesheet" />
+@using (Ajax.BeginForm("Send", null, new AjaxOptions()
+{
+    HttpMethod = "Post",
+    OnBegin = "MailAjax.Loading",
+    OnComplete = "MailAjax.Complate",
+    OnFailure = "MailAjax.Failure",
+    OnSuccess = "MailAjax.SuccessBack"
+},
+                                           new { @class = "form-horizontal dig-from", @role = "form" }))
+{
+    @Html.HiddenFor(p => p.ID)
+    @Html.HiddenFor(p => p.SendStatus)
+    @Html.HiddenFor(p => p.MailType)
+    @Html.HiddenFor(p => p.SaveDate)
+    @Html.HiddenFor(p => p.SendDate)
+    @Html.HiddenFor(p => p.FK_RELATIONID)
+    @Html.Hidden("ContentId", content.ID)
+    @Html.Hidden("ReplayUser", ViewData["ReplayUser"])
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="mail-box-header">
+            <div class="pull-right tooltip-demo">
+                @Html.Raw(ViewData["ReplayUser"] != null ? "<a href=\"javascript:history.go(-1)\" class=\"btn btn-warning btn-sm\" ><i class=\"fa fa-reply\"></i> 返回</a>" : "")
+                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 存为草稿</a>
+                <a href="#" class="btn btn-danger btn-sm"><i class="fa fa-times"></i> 放弃</a>
+            </div>
+            <h2>
+                写信
+            </h2>
+        </div>
+        <div class="mail-box">
+            <div class="mail-body">
+                <div class="form-group">
+                    <div class="chooseusers animated fadeInRight">
+                        <div class="heading" draggable="true">
+                            <small>
+                                选择联系人
+                            </small>
+                            <a href="javascript:closechooseusers()" class="pull-right text-white"><i class="fa fa-close fa-fw"></i></a>
+                        </div>
+                        <div class="slimScrollDiv" style="position: relative; width: auto; height: 500px;overflow-x:hidden;overflow-y:auto;">
+                            @{
+                                var departs = ViewData["EmailContacts"] as dynamic;
+                                if (departs != null)
+                                {
+                                    <div class="panel-group">
+                                        @{foreach (var depart in departs)
+                                            {
+                                                <div class=" panel-default">
+                                                    <div class="panel-heading">
+                                                        <div class="panel-title">
+                                                            <a role="button" data-toggle="collapse" href="#@depart.ID" aria-expanded="true">
+                                                                @depart.DepartName
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div id="@depart.ID" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                                        <div class="panel-body" style="padding:0;">
+                                                            @{
+                                                                foreach (var users in depart.UserList)
+                                                                {
+                                                                    <div class="chat-user" role="button" data-email="@users["InsideEmail"]">
+                                                                        <img class="chat-avatar img-circle" src="@users["FaceImg"]" alt=" ">
+                                                                        <div class=" chat-user-name text-navy">
+                                                                            @users["NAME"]
+                                                                            <span class="pull-right text-danger">@(new Service.CommonHelper().GetUserZW(users["LEVELS"]))</span>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                                }
+                                        }
+
+                                    </div>
+                                                                }
+                            }
+                        </div>
+                    </div>
+                    <label class="col-sm-2 control-label">发送到：</label>
+                    <div class="col-sm-10" style="padding-right:45px;">
+                        @Html.HiddenFor(p => p.ToUser, new { @class = "form-control", @placeholder = "", @datatype = "*", @nullmsg = "请填写收件人！", @errormsg = "请填写收件人！" })
+                        <div style="position:absolute;top:0;right:0">
+                            <a href="javascript:chooseusers()" class="btn btn-outline btn-info"><i class="fa fa-user fa-fw"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">主题：</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(p => p.MailTitle, new { @class = "form-control", @placeholder = "", @datatype = "*", @nullmsg = "请填写邮件标题！", @errormsg = "请填写邮件标题！" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <a href="javascript:void(0)" id="attachment" style="font-size:15px;" class="btn btn-outline btn-default" data-toggle="tooltip" data-placement="top" title="添加附件"> <i class="fa fa-paperclip"></i></a>
+                        <div id="attachments" class="m-t-sm clearfix">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mail-text h-200">
+                <script id="Content" name="Content" type="text/plain" style="width:100%;height:350px;">
+                    @Html.Raw(content.CONTENT)
+                </script>
+            </div>
+            <div class="mail-body text-right tooltip-demo">
+                <button class="btn btn-sm btn-primary .btn-send" type="submit"><i class="fa fa-send"></i> 发送</button>
+                <a href="mailbox.html" class="btn btn-white btn-sm"><i class="fa fa-times"></i> 放弃</a>
+                <a href="javascript:void(0)" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 存为草稿</a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+                                                                }
+@section scripts{
+    <script type="text/javascript" src="/Content/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="/Content/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" src="/Content/js/tag-editor/jquery.tag-editor.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.form-horizontal').initValidform();
+            UE.getEditor('Content', {
+                toolbars: [[
+                'undo', 'redo', '|',
+                'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+                'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                'directionalityltr', 'directionalityrtl', 'indent', '|',
+                'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+                'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+                'simpleupload', 'insertimage', 'emotion', 'scrawl', 'map', 'gmap', 'insertcode', 'pagebreak', 'template', 'background', '|',
+                'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+                'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+                'preview', 'searchreplace', 'drafts'
+                ]]
+            });
+            //收件人Tags表示
+            if ($("#ReplayUser").val() == '' || $("#ReplayUser").val().length <= 0) {
+                $('#ToUser').tagEditor();
+            } else { $('#ToUser').tagEditor({ initialTags: [$("#ReplayUser").val()] }); }
+            //上传附件
+            $("#attachment").click(function () {
+                dig.upload("/upload/", function () {
+                    var retval = this.returnValue;
+                    if (retval != '') {
+                        var json = JSON.parse(retval);
+                        $('#attachments').append('<div class="items">' + json.oldname + '<span class="text-muted">[' + json.unitsize + ']</span><span><a class="text-danger" href="javascript:(0)">删除</a></span><input type="hidden" name="attachment" value="' + json.oldname + ';' + json.newname + ';' + json.path + ';' + json.ext + ';' + json.unitsize + '"></div>');
+                    }
+                    $("#attachments .items .text-danger").click(function () {
+                        $(this).parent().parent().remove();
+                    });
+                });
+            });
+            //选择联系人
+            $(".chat-user").click(function () {
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                    $('#ToUser').tagEditor('removeTag', $(this).attr("data-email"));
+                }
+                else {
+                    $(this).addClass("active");
+                    $('#ToUser').tagEditor('addTag', $(this).attr("data-email"));
+                }
+            });
+        });
+        function chooseusers() {
+            $(".chooseusers").show();
+        }
+        function closechooseusers() {
+            $(".chooseusers").hide();
+        }
+        var MailAjax = {
+            Loading: function () {
+                dig.loading("正在上传");
+                $(".btn-send").attr("disabled", "disabled");
+            },
+            Success: function (result) {
+                if (result.Status == undefined) {
+                    document.writeln(result);
+                } else if (result.Status == "y") {
+                    var dialog = top.dialog.get(window);
+                    dig.successcallback(result.Msg, function () {
+                        if (dialog == "undefined" || dialog == undefined) {
+                            location.reload();
+                        }
+                        else {
+                            dialog.close('yes').remove();
+                        }
+
+                    });
+                } else {
+                    dig.error(result.Msg);
+                    SubAjax.Complete();
+                }
+            },
+            SuccessBack: function (result) {
+                if (result.Status == "y") {
+                    dig.successcallback(result.Msg, function () {
+                        if (result.ReUrl == 'undefined' || result.ReUrl == '' || result.ReUrl == undefined) {
+                            history.go(-1);
+                        }
+                        else { window.location.href = result.ReUrl; }
+                    });
+                } else {
+                    dig.error(result.Msg);
+                    SubAjax.Complete();
+                }
+            },
+            Failure: function () {
+                dig.error("网络超时,请稍后再试...");
+                SubAjax.Complete();
+            },
+            Complete: function () {
+                $(".btn-send").attr("disabled", false);
+            }
+        };
+    </script>
+}
+

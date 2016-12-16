@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "Acceptance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Domain.PRO_PROJECTS
+<div class="row">
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="m-b-md">
+                            <a href="/Pro/ProjectHome/Detail/@Model.ID" class="btn btn-warning btn-xs pull-right"><i class="fa fa-reply-all fa-fw"></i> 返回项目</a>
+                            <h2>@Model.ProjectTitle</h2>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <dl class="dl-horizontal">
+                                    <dt>状态：</dt>
+                                    <dd>
+                                        <span class="label label-primary">@(Common.Tools.GetEnumText<Common.enumProjectType>(Model.ProjectStatus))</span>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="col-sm-6">
+                                <dl class="dl-horizontal">
+                                    <dt>优先级：</dt>
+                                    <dd>
+                                        <span class="label label-danger">@(Common.Tools.GetEnumText<Common.enumProjectLevels>(Model.ProjectLevels))</span>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <dl class="dl-horizontal">
+                            <dt>项目工期：</dt>
+                            <dd class="text-navy">@Model.ProjectTimeLimit 天</dd>
+                        </dl>
+                    </div>
+                    <div class="col-sm-7" id="cluster_info">
+                        <dl class="dl-horizontal">
+                            <dt>开始日期：</dt>
+                            <dd>@Model.StartDate.ToString("yyyy年MM月dd日")</dd>
+                            <dt>结束日期：</dt>
+                            <dd>@Model.EndDate.ToString("yyyy年MM月dd日")</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <dl class="dl-horizontal">
+                            <dt>当前进度</dt>
+                            <dd>
+                                <div class="progress progress-striped active m-b-sm progress-small">
+                                    <div style="width: @ViewData["ProjectProgress"]%;" class="progress-bar progress-bar-danger"></div>
+                                </div>
+                                <small>当前已完成项目总进度的 <strong>@ViewData["ProjectProgress"]%</strong></small>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="row m-t-sm">
+                    <div class="col-sm-12">
+                        <div class="panel blank-panel">
+                            <div class="panel-heading">
+                                <div class="panel-options">
+                                    <ul class="nav nav-tabs">
+                                        @{
+                                            foreach (var stage in Model.PRO_PROJECT_STAGES.OrderBy(p => p.OrderNumber).ToList())
+                                            {
+                                                <li class="@(stage.OrderNumber == Model.PRO_PROJECT_STAGES.OrderBy(p => p.OrderNumber).FirstOrDefault().OrderNumber ? "active" : "")">
+                                                    <a href="project_detail.html#tab-@stage.OrderNumber" data-toggle="tab">@stage.StageTitle</a>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="tab-content">
+                                    @{
+                                        foreach (var stages in Model.PRO_PROJECT_STAGES.OrderBy(p => p.OrderNumber).ToList())
+                                        {
+                                            <div class="tab-pane @(stages.OrderNumber==Model.PRO_PROJECT_STAGES.OrderBy(p=>p.OrderNumber).FirstOrDefault().OrderNumber?"active":"")" id="tab-@stages.OrderNumber">
+                                                <div class="feed-activity-list">
+                                                    @{
+                                                        foreach (var stageUser in stages.PRO_PROJECT_TEAMS.Where(p => p.FK_StageId == stages.ID && p.JionStatus == Common.ClsDic.DicStatus["通过"]))
+                                                        {
+                                                            var user = new Service.CommonHelper().GetUserById(stageUser.FK_UserId);
+                                                            if (user != null && user.ID > 0)
+                                                            {
+                                                                var userFiles = new Service.CommonHelper().GetStageFiles(stages.ID, user.ID);
+                                                                if (userFiles != null && userFiles.Count > 0)
+                                                                {
+                                                                    foreach (var userFile in userFiles)
+                                                                    {
+                                                                        <div class="feed-element">
+                                                                            <div class="pull-left">
+                                                                                <img alt="@user.NAME" class="img-circle" src="@(string.IsNullOrEmpty(user.FACE_IMG) ? "/Pro/Project/User_Default_Avatat?name=" + user.NAME.Substring(0, 1) : user.FACE_IMG)" style="width:80px;height:80px;">
+                                                                            </div>
+                                                                            <div class="media-body ">
+                                                                                <small class="pull-right">
+                                                                                    @{
+                                                                                        if ((stages.StageStatus == Common.ClsDic.DicProject["进行中"] || stages.StageStatus == Common.ClsDic.DicProject["延期"]) && Model.Fk_UserId == ViewBag.Current && userFile.AcceptanceStatus == Common.ClsDic.DicStatus["等待审核"])
+                                                                                        {
+                                                                                            <a class="btn btn-primary btn-xs p210" href="javascript:Audit('@userFile.ID','@stages.ID')"><i class="fa fa-check fa-fw"></i> 通过</a>
+                                                                                            <a class="btn btn-danger btn-xs p210" href="javascript:Refuse('@userFile.ID','@stages.ID')"><i class="fa fa-close fa-fw"></i> 驳回</a>
+                                                                                        }
+                                                                                    }
+
+                                                                                </small>
+                                                                                <strong>@user.NAME</strong>
+                                                                                <br>
+                                                                                <div class="well">
+                                                                                    @Html.Raw("<span class=\"text-danger\">" + userFile.UploadDate.ToString("yyyy年MM月dd日 HH点mm分ss秒") + "：</span><a href=\"" + userFile.DocPath + "\"><i class=\"" + Common.FileHelper.GetFileIcon(userFile.DocFileExt) + "\"></i>&nbsp;" + userFile.DocName + "</a><span style=\"margin-left:15px;color: #B5AFAF\">" + userFile.DocSize + "&emsp;[" + userFile.CreateIP + "]</span>")
+                                                                                    <div class="pull-right">
+                                                                                        @Html.Raw(
+                                                                                stages.StageStatus == Common.ClsDic.DicProject["进行中"] || stages.StageStatus == Common.ClsDic.DicProject["延期"] ?
+                                                                                userFile.AcceptanceStatus == Common.ClsDic.DicStatus["等待审核"] ?
+                                                                                "<a class=\"text-info\"  href=\"javascript:void(0)\"><i class=\"fa fa-ellipsis-h fa-fw\"></i> 等待审核</a>" :
+                                                                                "<a class=\"text-danger\"  href=\"javascript:void(0)\"><i class=\"fa fa-close fa-fw\"></i> 驳回</a>" :
+                                                                                userFile.AcceptanceStatus == Common.ClsDic.DicStatus["通过"] ?
+                                                                                stages.StageStatus == Common.ClsDic.DicProject["已超时"] ?
+                                                                                "<a class=\"text-danger\"  href=\"javascript:void(0)\"><i class=\"fa fa-check fa-fw\"></i> 通过,超时" + stages.OverDays + "天</a>" :
+                                                                                "<a class=\"text-danger\"  href=\"javascript:void(0)\"><i class=\"fa fa-check fa-fw\"></i> 通过</a>" :
+                                                                                "<a class=\"text-danger\"  href=\"javascript:void(0)\"><i class=\"fa fa-close fa-fw\"></i> 驳回</a>")
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <div class="feed-element">
+                                                                                                <div class="pull-left">
+                                                                                                    <img alt="系统" class="img-circle" src="/Pro/Project/User_Default_Avatat?name=系" style="width:80px;height:80px;">
+                                                                                                </div>
+                                                                                                <div class="media-body ">
+                                                                                                    <strong>系统</strong>
+                                                                                                    <br>
+                                                                                                    <div class="well" style="font-size:15px;color: #F5A000;">
+                                                                                                        <i class="fa fa-exclamation-circle fa-fw"></i>暂无用户提交文档
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                    }
+                                                </div>
+
+                                            </div>
+                                                                                        }
+                                    }
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        //验收阶段任务通过
+        function Audit(n, y) {
+            var msg = "确定验收通过吗？";
+            dig.confirm("验收确认", msg, function () {
+                $.post("/Pro/ProjectHome/Audit", { idList: y, docId: n }, function (res) {
+                    if (res.Status == "y") {
+                        dig.successcallback(res.Msg, function () {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        dig.error(res.Msg);
+                    }
+                }, "json");
+            });
+        }
+        //驳回
+        function Refuse(n, y) {
+            var msg = "确定驳回文档吗？";
+            dig.confirm("驳回确认", msg, function () {
+                $.post("/Pro/ProjectHome/Refuse", { idList: y, docId: n }, function (res) {
+                    if (res.Status == "y") {
+                        dig.successcallback(res.Msg, function () {
+                            window.location.reload();
+                        });
+                    }
+                    else {
+                        dig.error(res.Msg);
+                    }
+                }, "json");
+            });
+        }
+    </script>
+}

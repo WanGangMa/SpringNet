@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+  <description>Spring注入Service，容器指向本层层封装的接口，舍弃Dao层，减少代码量</description>
+  <!--邮件管理begin-->
+  <!--发件管理-->
+  <object id="Service.Mail.MailoutManage" type="Service.ServiceImp.MailoutManage,Service" singleton="false">
+  </object>
+  <!--收件管理-->
+  <object id="Service.Mail.MailinManage" type="Service.ServiceImp.MailinManage,Service" singleton="false">
+  </object>
+  <!--附件管理-->
+  <object id="Service.Mail.MailAttachmentManage" type="Service.ServiceImp.MailAttachmentManage,Service" singleton="false">
+  </object>
+  <!--邮件管理end-->
+
+</objects>

@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CF9D3A01-C40A-450D-960C-086BC6798697}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Domain</RootNamespace>
+    <AssemblyName>Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\COM_CONTENT.cs" />
+    <Compile Include="Entities\COM_DAILYS.cs" />
+    <Compile Include="Entities\COM_UPLOAD.cs" />
+    <Compile Include="Entities\COM_WORKATTENDANCE.cs" />
+    <Compile Include="Entities.cs" />
+    <Compile Include="Entities\MAIL_ATTACHMENT.cs" />
+    <Compile Include="Entities\MAIL_INBOX.cs" />
+    <Compile Include="Entities\MAIL_OUTBOX.cs" />
+    <Compile Include="Entities\PRO_PROJECTS.cs" />
+    <Compile Include="Entities\PRO_PROJECT_FILES.cs" />
+    <Compile Include="Entities\PRO_PROJECT_MESSAGE.cs" />
+    <Compile Include="Entities\PRO_PROJECT_STAGES.cs" />
+    <Compile Include="Entities\PRO_PROJECT_TEAMS.cs" />
+    <Compile Include="Entities\SYS_BUSSINESSCUSTOMER.cs" />
+    <Compile Include="Entities\SYS_CHATMESSAGE.cs" />
+    <Compile Include="Entities\SYS_CODE.cs" />
+    <Compile Include="Entities\SYS_CODE_AREA.cs" />
+    <Compile Include="Entities\SYS_DEPARTMENT.cs" />
+    <Compile Include="Entities\SYS_LOG.cs" />
+    <Compile Include="Entities\SYS_MODULE.cs" />
+    <Compile Include="Entities\SYS_PERMISSION.cs" />
+    <Compile Include="Entities\SYS_POST.cs" />
+    <Compile Include="Entities\SYS_POST_DEPARTMENT.cs" />
+    <Compile Include="Entities\SYS_POST_USER.cs" />
+    <Compile Include="Entities\SYS_ROLE.cs" />
+    <Compile Include="Entities\SYS_ROLE_PERMISSION.cs" />
+    <Compile Include="Entities\SYS_SYSTEM.cs" />
+    <Compile Include="Entities\SYS_USER.cs" />
+    <Compile Include="Entities\SYS_USERINFO.cs" />
+    <Compile Include="Entities\SYS_USER_DEPARTMENT.cs" />
+    <Compile Include="Entities\SYS_USER_ONLINE.cs" />
+    <Compile Include="Entities\SYS_USER_PERMISSION.cs" />
+    <Compile Include="Entities\SYS_USER_ROLE.cs" />
+    <Compile Include="Entities\t_Bills.cs" />
+    <Compile Include="Entities\t_BillState.cs" />
+    <Compile Include="Entities\t_Buttons.cs" />
+    <Compile Include="Entities\t_CurrencyType.cs" />
+    <Compile Include="Entities\t_CustomerContact.cs" />
+    <Compile Include="Entities\t_CustomerIndustry.cs" />
+    <Compile Include="Entities\t_CustomerProperty.cs" />
+    <Compile Include="Entities\t_Customers.cs" />
+    <Compile Include="Entities\t_CustomerSource.cs" />
+    <Compile Include="Entities\t_Department.cs" />
+    <Compile Include="Entities\t_FundState.cs" />
+    <Compile Include="Entities\t_Group_Role_Ref.cs" />
+    <Compile Include="Entities\t_Inbox.cs" />
+    <Compile Include="Entities\t_LogisticalState.cs" />
+    <Compile Include="Entities\t_Menu.cs" />
+    <Compile Include="Entities\t_MonthlyCustomer.cs" />
+    <Compile Include="Entities\t_MonthlyStatement.cs" />
+    <Compile Include="Entities\t_Notices.cs" />
+    <Compile Include="Entities\t_OrderDetails.cs" />
+    <Compile Include="Entities\t_Orders.cs" />
+    <Compile Include="Entities\t_OrderState.cs" />
+    <Compile Include="Entities\t_OrderTicket.cs" />
+    <Compile Include="Entities\t_OrderTracker.cs" />
+    <Compile Include="Entities\t_PayType.cs" />
+    <Compile Include="Entities\t_PlaceInfo.cs" />
+    <Compile Include="Entities\t_Products.cs" />
+    <Compile Include="Entities\t_RegionInfo.cs" />
+    <Compile Include="Entities\t_RolePermission.cs" />
+    <Compile Include="Entities\t_Sys_Log.cs" />
+    <Compile Include="Entities\t_Tasks.cs" />
+    <Compile Include="Entities\t_Task_Attachments.cs" />
+    <Compile Include="Entities\t_Task_Contacts.cs" />
+    <Compile Include="Entities\t_Task_Department.cs" />
+    <Compile Include="Entities\t_Task_Group.cs" />
+    <Compile Include="Entities\t_Task_Group_User_Ref.cs" />
+    <Compile Include="Entities\t_Task_Quotes.cs" />
+    <Compile Include="Entities\t_Task_State.cs" />
+    <Compile Include="Entities\t_Task_Step.cs" />
+    <Compile Include="Entities\t_Task_Type.cs" />
+    <Compile Include="Entities\t_TransactionRecord.cs" />
+    <Compile Include="Entities\t_UserGroup.cs" />
+    <Compile Include="Entities\t_UserRole.cs" />
+    <Compile Include="Entities\t_Users.cs" />
+    <Compile Include="Entities\t_User_Group_Ref.cs" />
+    <Compile Include="Entities\t_User_Role_Ref.cs" />
+    <Compile Include="Enums\EnumClass.cs" />
+    <Compile Include="MyConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

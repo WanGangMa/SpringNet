@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+    .folder-list li {
+    border-bottom: 1px solid #e7eaec;
+}
+</style>
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content mailbox-content">
+                    <div class="file-manager">
+                        <a class="btn btn-block btn-primary compose-mail" href="javascript:void(0)" data-url="/Mail/Mail/WriteMail">写信</a>
+                        <div class="space-25"></div>
+                        <h5>文件夹</h5>
+                        <ul id="mailbox" class="folder-list m-b-md" style="padding: 0">
+                            <li>
+                                <a href="javascript:void(0)" data-url="/Mail/Mail/WriteMail"> <i class="fa fa-envelope-o"></i> 发信</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-url="/Mail/Mail/Inbox">
+                                    <i class="fa fa-inbox "></i> 收件箱 @Html.Raw(ViewData["MailOutBox"] == null ? "" : ViewData["MailOutBox"].ToString() == "0" ? "" : "<span class=\"label label-warning pull-right\">" + ViewData["MailOutBox"].ToString() + "</span>")
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-url="/Mail/Mail/Outbox">
+                                    <i class="fa fa-send "></i> 发件箱 
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-file-text-o"></i> 草稿 @Html.Raw(ViewData["DraftBox"] == null ? "" : ViewData["DraftBox"].ToString() == "0" ? "" : "<span class=\"label label-danger pull-right\">" + ViewData["DraftBox"].ToString() + "</span>")
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-url="/Mail/Mail/Trashbox"> <i class="fa fa-trash-o"></i> 垃圾箱</a>
+                            </li>
+                        </ul>
+                        <h5>分类</h5>
+                        <ul class="category-list" style="padding: 0">
+                            <li>
+                                <a href="javascript:void(0)"> <i class="fa fa-circle text-navy"></i> 工作</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"> <i class="fa fa-circle text-danger"></i> 文档</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"> <i class="fa fa-circle text-primary"></i> 社交</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"> <i class="fa fa-circle text-info"></i> 广告</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"> <i class="fa fa-circle text-warning"></i> 客户端</a>
+                            </li>
+                        </ul>
+
+                        <h5 class="tag-title">标签</h5>
+                        <ul class="tag-list" style="padding: 0">
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 朋友</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 工作</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 家庭</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 孩子</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 假期</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 音乐</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 照片</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-tag"></i> 电影</a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <iframe src="/Mail/Mail/Inbox" style="width:100%;" id="DeployBase" name="DeployBase" frameborder="0" scrolling="auto" onload="iFrameHeight()" allowtransparency="true"></iframe>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $("#mailbox a,.compose-mail").click(function () {
+                $("#DeployBase").prop("src", $(this).attr("data-url"));
+            });
+        });
+        function iFrameHeight() {
+            var ifm = document.getElementById("DeployBase");
+            var subWeb = document.frames ? document.frames["DeployBase"].document : ifm.contentDocument;
+            if (ifm != null && subWeb != null) {
+                ifm.height = subWeb.body.scrollHeight < 500 ? subWeb.body.scrollHeight + 100 : subWeb.body.scrollHeight;
+            }
+        }
+    </script>
+}
+
+
+
+

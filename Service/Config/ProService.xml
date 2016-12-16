@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+  <description>Spring注入Service，容器指向本层层封装的接口，舍弃Dao层，减少代码量</description>
+  <!--项目管理begin-->
+  <!--项目管理-->
+  <object id="Service.Pro.ProjectManage" type="Service.ServiceImp.ProjectManage,Service" singleton="false">
+  </object>
+  <!--项目阶段管理-->
+  <object id="Service.Pro.ProjectStageManage" type="Service.ServiceImp.ProjectStageManage,Service" singleton="false">
+  </object>
+  <!--项目团队管理-->
+  <object id="Service.Pro.ProjectTeamManage" type="Service.ServiceImp.ProjectTeamManage,Service" singleton="false">
+  </object>
+  <!--项目消息管理-->
+  <object id="Service.Pro.ProjectMessage" type="Service.ServiceImp.ProjectMessage,Service" singleton="false">
+  </object>
+  <!--项目文档管理-->
+  <object id="Service.Pro.ProjectFilesManage" type="Service.ServiceImp.ProjectFilesManage,Service" singleton="false">
+  </object>
+  <!--项目管理end-->
+
+</objects>

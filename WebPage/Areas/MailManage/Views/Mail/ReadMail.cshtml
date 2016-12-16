@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "ReadMail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Domain.MAIL_OUTBOX
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="mail-box-header">
+        <div class="pull-right tooltip-demo">
+            <a href="@(ViewBag.IsInbox ? "javascript:window.parent.location.reload()" : "javascript:history.go(-1)")" class="btn btn-danger btn-sm"><i class="fa fa-angle-left"></i> 返回邮件列表</a>
+            @{
+                if (ViewBag.IsInbox)
+                {
+                    <a href="/Mail/Mail/WriteMail?toUser=@(Model.FK_UserId + ViewData["EmailDomain"])" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="回复"><i class="fa fa-reply"></i> 回复</a>
+                }
+            }
+            <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="打印邮件"><i class="fa fa-print"></i> </a>
+            <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="标为垃圾邮件"><i class="fa fa-trash-o"></i> </a>
+        </div>
+        <div class="mail-tools tooltip-demo m-t-md">
+
+
+            <h3>
+                <span class="font-noraml">主题： </span>@Model.MailTitle
+                <span class="font-noraml text-navy">&nbsp;@Html.Raw(Model.MAIL_ATTACHMENT != null && Model.MAIL_ATTACHMENT.Count > 0 ? "<i class=\"fa fa-paperclip\"></i>" : "")</span>
+            </h3>
+            <h5>
+                <span class="pull-right font-noraml text-danger">@Html.Raw(Model.SendDate.GetDateTimeFormats('D')[1].ToString() + "&nbsp;" + Model.SendDate.ToString("HH:mm"))</span>
+                <span class="font-noraml">发件人： </span>@(new Service.CommonHelper().GetUserNameByAccount(Model.FK_UserId))
+                <span class="font-noraml text-muted">@Html.Raw("&nbsp;'&lt;" + Model.FK_UserId + ViewData["EmailDomain"] + "&gt;'")</span>
+            </h5>
+        </div>
+    </div>
+    <div class="mail-box">
+
+
+        <div class="mail-body">
+            @Html.Raw(ViewData["MailContent"])
+        </div>
+        @{
+            if (Model.MAIL_ATTACHMENT != null && Model.MAIL_ATTACHMENT.Count > 0)
+            {
+                <div class="mail-attachment">
+                    <p>
+                        <span><i class="fa fa-paperclip text-navy"></i> @Model.MAIL_ATTACHMENT.Count 个附件</span>
+                    </p>
+
+                    <div class="attachment">
+                        @{
+                            foreach (var attachement in Model.MAIL_ATTACHMENT)
+                            {
+                                <div class="file-box">
+                                    <div class="file">
+                                        <a href="@attachement.AttPath">
+                                            <span class="corner"></span>
+                                            <div class="icon">
+                                                <i class="@Html.Raw(Common.FileHelper.GetFileIcon(attachement.AttExt))"></i>
+                                            </div>
+                                            <div class="file-name">
+                                                @attachement.AttName
+                                                <br />
+                                                <small style="color:#f50e8d">@attachement.AttSize</small>
+                                            </div>
+                                        </a>
+                                    </div>
+
+                                </div>
+                            }
+                        }
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                            }
+        }
+        <div class="mail-body text-right tooltip-demo">
+            @{
+                if (ViewBag.IsInbox)
+                {
+                    <a href="/Mail/Mail/WriteMail?toUser=@(Model.FK_UserId + ViewData["EmailDomain"])" class="btn btn-white btn-sm"><i class="fa fa-reply"></i> 回复</a>
+                }
+            }
+            <button title="" data-placement="top" data-toggle="tooltip" type="button" data-original-title="打印这封邮件" class="btn btn-sm btn-white"><i class="fa fa-print"></i> 打印</button>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>

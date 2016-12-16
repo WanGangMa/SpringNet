@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model dynamic
+<style type="text/css">
+    .timeline-item .number {
+        color: #D7D7D8;
+        font-size: 100px;
+        font-family: fantasy;
+    }
+
+    .currentrank img {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
+    .currentrank .currentnumber{
+         color: #D7D7D8;
+        font-size: 64px;
+        font-family: fantasy;
+            float: right;
+    margin-top: -25px;
+    }
+</style>
+<div class="wrapper wrapper-content  animated fadeInUp">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>任务排行榜</h5>
+                    <div class="ibox-tools">                        
+                        <a class="reload-link" style="color: #c4c4c4" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="left" title="刷新">
+                            <i class="fa fa-repeat fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <a class="btn btn-danger btn-rounded @(ViewData["RankStyle"] != null && ViewData["RankStyle"].ToString() == "depart" ? "" : "btn-outline")" href="/Pro/ProjectRankingList">部门排行榜</a>
+                    <a class="btn btn-danger btn-rounded @(ViewData["RankStyle"] != null && ViewData["RankStyle"].ToString() == "all" ? "" : "btn-outline")" href="/Pro/ProjectRankingList?rank=all">总排行榜</a>
+                </div>
+                @{
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        <div class="ibox-content timeline">
+                            <div class="timeline-item">
+                                <div class="row">
+                                    <div class="col-sm-3 text-center">
+                                        @Html.Raw(new Service.CommonHelper().RankFoums(i))
+                                        <br />
+                                        <span class="number">@i</span>
+                                    </div>
+                                    <div class="col-sm-7 content no-top-border">
+                                        <div class="row m-b-xs">
+                                            <div class="col-sm-3">
+                                                <img alt="image" class="img-circle" src="@item.UserFace" style="width:100%;height:100%;">
+                                                <br />
+                                                <span class="col-sm-12 text-center m-t-sm text-danger">@(new Service.CommonHelper().GetUserZW(item.UserZhiWu))</span>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <div class="m-b-sm">
+                                                    <h3>@item.UserName</h3>
+                                                </div>
+                                                <div class="m-b-sm">
+                                                    <a href="/Mail/Mail/WriteMail?toUser=@(item.UserAccount + ViewData["EmailDomain"])" class="m-r-xs"><i class="fa fa-envelope fa-fw"></i></a><span>入职时间：@item.EntyTime</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-danger">参与任务</span>
+                                                    <small class="pull-right">@item.PartakeCount/@ViewData["StageCount"] 个</small>
+                                                </div>
+                                                <div class="progress progress-small">
+                                                    <div style="width: @item.PartakePercent%;" class="progress-bar  progress-bar-danger"></div>
+                                                </div>
+                                                <div>
+                                                    <span class="text-warning">采纳率</span>
+                                                    <small class="pull-right">@item.AdoptPercent%</small>
+                                                </div>
+                                                <div class="progress progress-small">
+                                                    <div style="width: @item.AdoptPercent%;" class="progress-bar progress-bar-warning"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        i++;
+                    }
+                }
+            </div>
+
+        </div>
+        <div class="col-sm-4">
+            <div class="ibox-detail-title">
+                <i class="fa fa-flag"></i>我的排名
+            </div>
+            <div class="ibox-content">
+                @{
+                    var CurrentUser = ViewData["CurrentRank"] as dynamic;
+                    <div class="currentrank m-b-md">
+                        @Html.Raw(new Service.CommonHelper().RankFoums(Int32.Parse(ViewData["CurrentRankNumber"].ToString())))
+                        <span class="currentnumber">@ViewData["CurrentRankNumber"]</span>
+                    </div>
+                    <div class="m-t-sm">
+                        <span class="text-danger">参与任务</span>
+                        <small class="pull-right">@CurrentUser.PartakeCount/@ViewData["StageCount"] 个</small>
+                    </div>
+                    <div class="progress progress-small">
+                        <div style="width: @CurrentUser.PartakePercent%;" class="progress-bar  progress-bar-danger"></div>
+                    </div>
+                    <div>
+                        <span class="text-warning">采纳率</span>
+                        <small class="pull-right">@CurrentUser.AdoptPercent%</small>
+                    </div>
+                    <div class="progress progress-small">
+                        <div style="width: @CurrentUser.AdoptPercent%;" class="progress-bar progress-bar-warning"></div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">     
+    </script>
+}
+
+
+

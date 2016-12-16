@@ -1,0 +1,204 @@
+﻿@model Common.PageInfo
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="dataTables_info">
+            显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
+            <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="$('#form1').submit()">
+                <option value="3" @(Model.PageSize == 3 ? "selected" : "")>3</option>
+                <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+                <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
+            </select> 条记录
+        </div>
+    </div>
+    <div class="col-sm-6">
+        @{
+            var PageIndex = Model.Index;
+            var DataCount = Model.Count;
+            var PageSize = Model.PageSize;
+            var Url = Model.Url;
+            var PageNum = 5;
+
+            if (DataCount > 0 && DataCount > PageSize)
+            {
+                var pageCount = 0;
+                if (DataCount % PageSize == 0)
+                {
+                    pageCount = DataCount / PageSize;
+                }
+                else
+                {
+                    pageCount = DataCount / PageSize + 1;
+                }
+                if (string.IsNullOrEmpty(Url))
+                {
+                    Url = HttpContext.Current.Request.Url.AbsoluteUri.ToString();
+                }
+                int num2;
+                if (Url.IndexOf("@p@") < 0)
+                {
+                    num2 = Url.IndexOf("?");
+                    if (num2 > 0 && num2 < Url.Length)
+                    {
+                        int num3 = Url.ToLower().IndexOf("page=", num2);
+                        if (num3 > 0)
+                        {
+                            int num4 = Url.IndexOf("&", num3 + 1);
+                            if (num4 > 0)
+                            {
+                                Url = Url.Substring(0, num3) + Url.Substring(num4);
+                                Url += "&";
+                            }
+                            else
+                            {
+                                Url = Url.Substring(0, num3);
+                            }
+                        }
+                        else
+                        {
+                            Url += "&";
+                        }
+                    }
+                    else
+                    {
+                        Url = "?";
+                    }
+                }
+                <div class="dataTables_paginate paging_full_numbers" style="padding-top: 0px;" id="example_paginate">
+                    <ul class="pagination" style="margin-top:0px">
+                       
+                        @if (PageIndex > 1)
+                        {
+                            <li class="paginate_button previous" id="example_first">
+                                @Ajax.ActionLink("首頁", null, null, null, new AjaxOptions
+                           {
+                               UpdateTargetId = "targetDiv",
+                               HttpMethod = "Get",
+                               InsertionMode = InsertionMode.Replace,
+                               Url = (Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", "1") : (Url + "page=1")
+                           }, new { aria_controls = "example", data_dt_idx = "1", tabindex = "0" })
+                            </li>
+                        }
+                        else
+                        {
+
+                            <li class="paginate_button previous disabled" id="example_first"><a href="#" aria-controls="example" data-dt-idx="1" tabindex="0">首页</a></li>
+                        }
+                        @if (PageIndex > 1)
+                        {
+                            num2 = PageIndex - 1;
+                            <li class="paginate_button previous" id="example_previous">
+                                @Ajax.ActionLink("上一頁", null, null, null, new AjaxOptions
+                           {
+                               UpdateTargetId = "targetDiv",
+                               HttpMethod = "Get",
+                               InsertionMode = InsertionMode.Replace,
+                               Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
+
+                           }, new { aria_controls = "example", data_dt_idx = "1", tabindex = "0" })
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="paginate_button previous disabled" id="example_previous">
+                                <a href="#" aria-controls="example" data-dt-idx="1" tabindex="0">上一页</a>
+                            </li>
+                        }
+                        @if (PageIndex + PageNum / 2 <= pageCount)
+                        {
+                            num2 = PageIndex + PageNum / 2 - PageNum;
+                        }
+                        else
+                        {
+                            num2 = pageCount - PageNum + 1;
+                        }
+                        @if (num2 <= 0)
+                        {
+                            num2 = 1;
+                        }
+                        @{int num5 = 1;}
+                        @while (num5 <= PageNum && num2 <= pageCount)
+                        {
+                            if (num2 != PageIndex)
+                            {
+                                <li class="paginate_button ">
+                                    @Ajax.ActionLink(num2.ToString(), null, null, null, new AjaxOptions
+                               {
+                                   UpdateTargetId = "targetDiv",
+                                   HttpMethod = "Get",
+                                   InsertionMode = InsertionMode.Replace,
+                                   Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
+
+                               }, new { aria_controls = "example", data_dt_idx = "3", tabindex = "0" })
+                                </li>
+
+                            }
+                            else
+                            {
+                                <li class="paginate_button active"><a href="JavaScript:void(0)" aria-controls="example" data-dt-idx="2" tabindex="0">@num2.ToString()</a></li>
+                            }
+                            num2++;
+                            num5++;
+                        }
+                        @if (pageCount > PageNum && pageCount - PageIndex > 4)
+                        {
+                            <li class="dot"><span>......</span></li>
+                            <li class="paginate_button">
+                                @Ajax.ActionLink(pageCount.ToString(), null, null, null, new AjaxOptions
+                           {
+                               UpdateTargetId = "targetDiv",
+                               HttpMethod = "Get",
+                               InsertionMode = InsertionMode.Replace,
+                               Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", pageCount.ToString()) : (Url + "page=" + pageCount.ToString()))
+
+                           }, new { aria_controls = "example", data_dt_idx = "3", tabindex = "0" })
+
+                            </li>
+
+                        }
+                        @if (PageIndex < pageCount)
+                        {
+                            num2 = PageIndex + 1;
+                            <li class="paginate_button next" id="example_next">
+                                @Ajax.ActionLink("下一頁", null, null, null, new AjaxOptions
+                           {
+                               UpdateTargetId = "targetDiv",
+                               HttpMethod = "Get",
+                               InsertionMode = InsertionMode.Replace,
+                               Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
+
+                           }, new { aria_controls = "example", data_dt_idx = "4", tabindex = "0" })
+
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="paginate_button next disabled" id="example_next"><a href="javascript:void(0)" aria-controls="example" data-dt-idx="4" tabindex="0">下一页</a></li>
+                        }
+                        @if (PageIndex < pageCount)
+                        {
+                            <li class="paginate_button next" id="example_last">
+                                @Ajax.ActionLink("末頁", null, null, null, new AjaxOptions
+                           {
+                               UpdateTargetId = "targetDiv",
+                               HttpMethod = "Get",
+                               InsertionMode = InsertionMode.Replace,
+                               Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", pageCount.ToString()) : (Url + "page=" + pageCount.ToString()))
+
+                           }, new { aria_controls = "example", data_dt_idx = "5", tabindex = "0" })
+
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="paginate_button next disabled" id="example_last"><a href="#" aria-controls="example" data-dt-idx="1" tabindex="0">末页</a></li>
+                        }
+                    </ul>
+                </div>
+                            }
+        }
+
+    </div>
+</div>
+<script src="~/Content/js/admin/Common_Part.js"></script>

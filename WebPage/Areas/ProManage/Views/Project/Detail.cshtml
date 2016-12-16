@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var content = ViewData["ProjectDescribe"] == null ? new Domain.COM_CONTENT() : ViewData["ProjectDescribe"] as Domain.COM_CONTENT;
+}
+@model Domain.PRO_PROJECTS
+<style type="text/css">
+    .gray-bg {
+        background-color: white;
+    }
+</style>
+@using (Ajax.BeginForm("Save", null, new AjaxOptions()
+                           {
+                               HttpMethod = "Post",
+                               OnBegin = "SubAjax.Loading",
+                               OnComplete = "SubAjax.Complate",
+                               OnFailure = "SubAjax.Failure",
+                               OnSuccess = "SubAjax.SuccessBack"
+                           },
+                               new { @class = "form-horizontal dig-from", @role = "form" }))
+{
+    @Html.HiddenFor(p=>p.ID)
+    @Html.HiddenFor(p=>p.Fk_DepartId)
+    @Html.HiddenFor(p=>p.Fk_UserId)
+    @Html.HiddenFor(p=>p.ProjectStatus)
+    @Html.HiddenFor(p=>p.EndDate)
+    @Html.HiddenFor(p=>p.CreateDate)
+    @Html.HiddenFor(p => p.FK_RELATIONID)
+    @Html.Hidden("ContentId", content.ID)
+<div class="wrapper wrapper-content animated fadeInUp">
+    <div class="row">
+        <div class="ibox-detail-title">
+            <i class="fa fa-pencil-square-o"></i>添加/修改项目
+        </div>
+        <div class="ibox-content">
+                <div class="ibox-title text-center text-warning">
+                    项目信息
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">项目名称：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.ProjectTitle, new { @class = "form-control", @placeholder = "请输入项目名称", @datatype = "*", @nullmsg = "请输入项目名称！", @errormsg = "请输入项目名称！" })
+                                    <span class="input-group-addon"><i class="fa fa-cubes"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">项目总价：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.ProjectMoney, new { @class = "form-control", @placeholder = "请输入项目总价（0.00）", @datatype = "am", @nullmsg = "请输入项目总价！", @errormsg = "请输入正确的价格！" })
+                                    <span class="input-group-addon"><i class="fa fa-rmb"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">项目工期：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.ProjectTimeLimit, new { @class = "form-control", @placeholder = "请输入项目工期（天）", @datatype = "n", @nullmsg = "请输入项目工期！", @errormsg = "工期必须为整数！" })
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">项目级别：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    <select name="ProjectLevels" class="form-control input-sm inline">
+                                        @{
+                                            foreach (var plevel in Common.Tools.BindEnumsList(typeof(enumProjectLevels)))
+                                            {
+                                                <option value="@plevel.Value" @(Model != null && Model.ProjectLevels == plevel.Value ? "selected" : "")>@plevel.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="input-group-addon"><i class="fa fa-level-down"></i></span>
+                                </div>
+                                </div>
+                        </div>   
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">开始日期：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.StartDate, new { @class = "form-control", @placeholder = "请选择项目开始日期", @onclick = "ldate('StartDate','YYYY-MM-DD hh:mm:ss')" })
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">结束日期：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    <input type="text" class="form-control" placeholder="自动计算" disabled="disabled" value="@Model.EndDate" />
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>                   
+                    </div>                    
+                </div>
+            <div class="ibox-title text-center text-warning">
+                项目描述
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <script id="Content" name="Content" type="text/plain" style="width:100%;height:200px;">
+                            @Html.Raw(content.CONTENT)
+                        </script>
+                    </div>
+                </div>     
+            </div>
+                <div class="ibox-title text-center text-warning">
+                    合同信息
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">合同编号：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.ContractCode, new { @class = "form-control", @placeholder = "请输入合同编号", @datatype = "*", @nullmsg = "请输入合同编号！", @errormsg = "请输入合同编号！" })
+                                    <span class="input-group-addon"><i class="fa fa-file-word-o"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">签定日期：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.SignDate, new { @class = "form-control", @placeholder = "请选择合同签定日期", @onclick = "ldate('SignDate')" })
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                    <div class="col-sm-6"> 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">签定代表：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group m-b">
+                                    @Html.TextBoxFor(p => p.SignPersion, new { @class = "form-control", @placeholder = "请输入合同签定人", @datatype = "*", @nullmsg = "请输入合同签定人！", @errormsg = "请输入合同签定人！" })
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                </div>
+                            </div>
+                        </div>                       
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">网站合同：</label>
+                            <div class="col-sm-10">
+                                <div class="input-group">
+                                    @Html.TextBoxFor(p => p.ContractFile, new { @class = "form-control", @placeholder = "请上传合同", @datatype = "*", @nullmsg = "请上传合同！", @errormsg = "请上传合同！" })
+                                    <span class="input-group-btn"><button type="button" class="btn btn-primary" id="upfile"><i class="fa fa-file-word-o"></i> 上传合同</button></span>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                    </div>
+            <div class="ibox-title text-center text-warning">
+                客户信息
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                       @{
+                                            var customers = ViewData["CustomerList"] as dynamic;
+                                            if (customers != null)
+                                            {
+                                                <table id="dataTable" class="table table-striped table-bordered table-hover dataTables-example JColResizer" style="text-align:center;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="tn" style="width: 50px;"></th>
+                                                            <th>客户名称</th>
+                                                            <th>所在地</th>
+                                                            <th>公司电话</th>
+                                                            <th>验证状态</th>
+                                                            <th>负责人</th>
+                                                        </tr>
+                                                    </thead>
+                                                    @foreach (var customer in customers)
+                                                    {
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="tn"><input type="radio" name="Fk_BussinessCustomer" value="@customer.ID" @(Model.Fk_BussinessCustomer != null && Model.Fk_BussinessCustomer == customer.ID ? "checked" : "") class="icheck_box"></td>
+                                                                <td>@Html.Raw(customer.CustomerStyle) &nbsp;@customer.CompanyName</td>
+                                                                <td>@Html.Raw(customer.CompanyProvince + "&nbsp;" + customer.CompanyCity + "&nbsp;" + customer.CompanyArea)</td>
+                                                                <td><i class="fa fa-phone fa-fw contact-type"></i> @customer.CompanyTel</td>
+                                                                <td>@Html.Raw(customer.IsValidate ? "<span class=\"btn btn-primary btn-xs p210\">已验证</span>" : "<span class=\"btn btn-warning btn-xs p210\">等待验证</span>")</td>
+                                                                <td><i class="fa fa-user fa-fw"></i> @customer.ChargePersionName</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    }
+                                                </table>
+                                            }
+                    }
+                    </div>
+                </div>
+            </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-save" type="submit"><i class="fa fa-check"></i> <span>确定保存</span></button>
+                        <a class="btn btn-warning" href="javascript:history.go(-1)"><i class="fa fa-reply-all"></i> 取消返回</a>
+                    </div>
+        </div>
+    </div>
+</div>
+}
+@section scripts{
+<script type="text/javascript" src="/Content/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/Content/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.form-horizontal').initValidform();
+            UE.getEditor('Content');
+            //上传合同
+            $("#upfile").click(function () {
+                dig.upload($('#ContractFile').val(), function () {
+                    var retval = this.returnValue;
+                    if (retval != '') {
+                        var json = JSON.parse(retval);
+                        $('#ContractFile').val(json.path);
+                    } else {
+                        $('#ContractFile').val('');
+                    }
+                });
+            });
+        });
+    </script>
+}

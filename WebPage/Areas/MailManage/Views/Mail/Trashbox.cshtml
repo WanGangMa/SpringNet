@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Trashbox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Common.PageInfo
+<div class="wrapper wrapper-content animated fadeInRight">
+    @using (Ajax.BeginForm("Trashbox", null, new AjaxOptions() { }, new { @id = "form1", @class = "form-horizontal", @method = "get" }))
+    {
+        <div class="ibox mail-box-header">
+            <div class="pull-right mail-search">
+                <div class="input-group">
+                    @Html.TextBox("Search", null, new { @class = "input-sm form-control", @placeholder = "搜索邮件标题，发件人等" })
+                    <span class="input-group-btn">
+                        <button type="submit" onclick="submit()" class="btn btn-sm btn-primary"> 搜索</button>
+                    </span>
+                </div>
+            </div>
+            <h2>
+                垃圾箱
+            </h2>
+            <div class="mail-tools tooltip-demo m-t-md">
+                @Service.CommonHtmlHelper.PaginationUlPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+                <a class="btn btn-white btn-sm" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="top" title="刷新邮件列表"><i class="fa fa-refresh"></i> 刷新</a>
+                <a class="btn btn-white btn-sm" id="delete" action="Clear" data-toggle="tooltip" data-placement="top" title="彻底删除邮件"><i class="fa fa-trash-o"></i></a>
+            </div>
+        </div>
+        <div class="mail-box">
+            <table id="emailTable" class="table table-hover table-mail">
+                <tbody>
+                    @{foreach (var item in Model.List)
+                        {
+                            <tr class="read">
+                                <td class="tn" style="width:50px !important;">
+                                    <input name="checkbox_name" class="icheck_box" type="checkbox" value="@item.ID" />
+                                </td>
+                                <td class="mail-ontact">
+                                    @Html.Raw(item.FromUser)
+                                    @Html.Raw(item.ReadStatus == ClsDic.DicMailReadStatus["未读"] ? "<span class=\"label label-danger pull-right\">未读</span>" : "")
+                                </td>
+                                <td class="mail-subject">
+                                    <a href="/Mail/Mail/ReadMail/@item.MailID?box=trash" title="@item.MailTitle">@item.MailTitle</a>
+                                </td>
+                                <td class="">@Html.Raw(item.IsAttachement ? "<i class=\"fa fa-paperclip text-danger\"></i>" : "")</td>
+                                <td class="text-right mail-date">@item.ReceivingTime</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="mail-box-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_info">
+                        显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
+                        <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="submit()">
+                            <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
+                            <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                            <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+                            <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
+                        </select> 条记录
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    @Service.CommonHtmlHelper.PaginationPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+                </div>
+            </div>
+        </div>
+                        }
+</div>

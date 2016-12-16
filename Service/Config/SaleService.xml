@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<object>
+  <object id="Service.Order" type="Service.ServiceImp.OrderManage,Service" singleton="false"></object>
+  <object id="Service.Customer" type="Service.ServiceImp.CustomerManage,Service" singleton="false"></object>
+  <object id="Service.PlaceInfo" type="Service.ServiceImp.PlaceInfoManage,Service" singleton="false"></object>
+
+</object>

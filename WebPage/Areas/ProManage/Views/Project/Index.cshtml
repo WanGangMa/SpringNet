@@ -1,0 +1,257 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="/Content/css/admin/skins/flat/red.css" rel="stylesheet" />
+<style type="text/css">
+   .projects .ibox-content{float:left;margin:15px 1%;clear:none;width:48%;}
+</style>
+@model Common.PageInfo
+<div class="wrapper wrapper-content animated fadeInUp">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>项目管理</h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-primary btn-xs p210" id="insert" action="add" href="/Pro/Project/detail"><i class="fa fa-plus-circle fa-fw"></i> 创建新项目</a>
+                        <a class="btn btn-warning btn-xs p210" id="modify" action="edit"><i class="fa fa-pencil fa-fw"></i> 编辑项目</a>
+                        <a class="btn btn-danger btn-xs p210" id="delete" action="remove"><i class="fa fa-trash-o fa-fw"></i> 删除项目</a>
+                        <a class="btn btn-success btn-xs p310" id="stage" action="stage"><i class="fa fa-gg fa-fw"></i> 阶段任务</a>
+                        <a class="btn btn-info btn-xs p210" id="doc" action="document"><i class="fa fa-sheqel fa-fw"></i> 项目文档</a>
+                        <a class="btn btn-white btn-xs p210" id="teams" action="teams"><i class="fa fa-user fa-fw"></i> 团队成员审核</a>
+                        <a class="reload-link" style="color: #c4c4c4" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="left" title="刷新">
+                            <i class="fa fa-repeat fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content gray-bg">
+                    @using (Ajax.BeginForm("Index", null, new AjaxOptions() { }, new { @id = "form1", @class = "form-horizontal", @method = "get" }))
+                    {
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <label>项目状态：</label>
+                                <select id="ProjectType" name="ProjectType" class=" form-control inline input-sm  input-s-sm" onchange="submit()">
+                                    <option value="" @(ViewData["ProjectType"] == null || ViewData["ProjectType"].ToString() == "" ? "selected" : "")>全部项目</option>
+                                    @{
+                        var projecttypeList = ViewData["ProjectTypeList"] as List<EnumsClass>;
+                        if (projecttypeList != null && projecttypeList.Count > 0)
+                        {
+                            foreach (var projecttype in projecttypeList)
+                            {
+                                <option value="@projecttype.Value" @(ViewData["ProjectType"] != null && ViewData["ProjectType"].ToString() == projecttype.Value.ToString() ? "selected" : "")>@projecttype.Name</option>
+                            }
+                        }
+                                    }
+                                    }
+
+                                </select>
+
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox("Search", null, new { @class = "input-sm form-control", @placeholder = "请输入查询关键词" })
+                                    <span class="input-group-btn">
+                                        <button type="submit" onclick="submit()" class="btn btn-sm btn-primary"> 搜索</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row projects">
+                            @{foreach (var item in Model.List)
+                            {
+                                <div class="ibox-content">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="position:absolute;top:0;right:10px;">
+                                                <input name="checkbox_name" class="icheck_box" type="checkbox" value="@item.ID" />
+                                            </div>
+                                            <div class="m-b-md">
+                                                <a href="/Pro/Project/detail/@item.ID"><h3>@item.ProjectTitle</h3></a>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <dl class="dl-horizontal">
+                                                        <dt>项目状态：</dt>
+                                                        <dd>
+                                                            <span class="label label-primary">@item.ProjectStatus</span>
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <dl class="dl-horizontal">
+                                                        <dt>优先级：</dt>
+                                                        <dd>
+                                                            <span class="text-danger">@item.ProjectLevels</span>
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <dl class="dl-horizontal">
+                                                <dt>项目经理：</dt>
+                                                <dd>@item.ProjectManager</dd>
+                                            </dl>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <dl class="dl-horizontal">
+                                                <dt>客户：</dt>
+                                                <dd>
+                                                    <a href="project_detail.html#" class="text-navy"> @item.BussinessCustomer</a>
+                                                </dd>
+                                                <dt>项目金额：</dt>
+                                                <dd>￥@item.ProjectMoney</dd>
+                                                <dt>合同编号：</dt>
+                                                <dd class="text-navy">
+                                                    <a href="@item.ContractFile">@item.ContractCode</a>
+                                                </dd>
+                                                <dt>签定时间：</dt>
+                                                <dd class="text-navy">
+                                                    @item.SignDate
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <dl class="dl-horizontal">
+                                                <dt>项目工期：</dt>
+                                                <dd class="text-danger">@item.ProjectTimeLimit 天</dd>
+                                                <dt>开始日期：</dt>
+                                                <dd>@item.StartDate</dd>
+                                                <dt>结束日期：</dt>
+                                                <dd>@item.EndDate</dd>
+                                            </dl>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <dl class="dl-horizontal">
+                                                <dt>团队成员：</dt>
+                                                <dd class="project-people">
+                                                    @Html.Raw(item.Teams)
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <dl class="dl-horizontal">
+                                                <dt>当前进度</dt>
+                                                <dd>
+                                                    <div class="progress progress-striped active m-b-sm progress-small">
+                                                        <div style="width: @item.Progerss%;" class="progress-bar progress-bar-danger"></div>
+                                                    </div>
+                                                    <small>当前已完成项目总进度的 <strong>@item.Progerss%</strong></small>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="dataTables_info">
+                                    显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
+                                    <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="submit()">
+                                        <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
+                                        <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
+                                        <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
+                                        <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
+                                    </select> 条记录
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                @Service.CommonHtmlHelper.PaginationPager(Model.Index, Model.PageSize, Model.Count, 7, Model.Url)
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            //初始化CheckBox
+            $(".icheck_box").iCheck({
+                checkboxClass: 'icheckbox_flat-red',
+                radioClass: 'iradio_flat-red',
+                increaseArea: '20%' // optional
+            });
+            //列表选择修改
+            $('#modify').click(function () {
+                var vals = '';
+                var num = 0;
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals = $(this).val();
+                    num++;
+                });
+                if (!vals) {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                if (num > 1) {
+                    dig.error("对不起，每次只能修改一条记录！");
+                    return;
+                }
+                location.href = "/Pro/Project/detail/" + vals;
+            });
+            //项目文档
+            $('#doc').click(function () {
+                var vals = '';
+                var num = 0;
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals = $(this).val();
+                    num++;
+                });
+                if (!vals) {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                if (num > 1) {
+                    dig.error("对不起，每次只能修改一条记录！");
+                    return;
+                }
+                location.href = "/Pro/ProjectDocument?id=" + vals;
+            });
+            //项目阶段任务
+            $('#stage').click(function () {
+                var vals = '';
+                var num = 0;
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals = $(this).val();
+                    num++;
+                });
+                if (!vals) {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                if (num > 1) {
+                    dig.error("对不起，每次只能修改一条记录！");
+                    return;
+                }
+                location.href = "/Pro/ProjectStage?id=" + vals;
+            });
+            //项目团队管理
+            $('#teams').click(function () {
+                var vals = '';
+                var num = 0;
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals = $(this).val();
+                    num++;
+                });
+                if (!vals) {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                if (num > 1) {
+                    dig.error("对不起，每次只能修改一条记录！");
+                    return;
+                }
+                location.href = "/Pro/ProjectTeams/Index/" + vals;
+            });
+        });
+    </script>
+}

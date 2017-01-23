@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
 using Service.IService;
 using WebPage.Controllers;
@@ -12,9 +10,21 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class ModuleController : BaseController
     {
-        IModuleManage ModuleManage { get; set; }
-        IPermissionManage PermissionManage { get; set; }
-        ISystemManage SystemManage { get; set; }
+        IModuleManage ModuleManage;
+        IPermissionManage PermissionManage;
+        ISystemManage SystemManage;
+
+        public ModuleController
+            (
+                IModuleManage ModuleManage,
+                IPermissionManage PermissionManage,
+                ISystemManage SystemManage
+            )
+        {
+            this.ModuleManage = ModuleManage;
+            this.PermissionManage = PermissionManage;
+            this.SystemManage = SystemManage;
+        }
         // GET: Module
         [UserAuthorize(ModuleAlias ="Module",OperaAction ="View")] //验证是否有查看权限
         public ActionResult Index()
@@ -22,12 +32,12 @@ namespace WebPage.Areas.SysManage.Controllers
             try
             {
                 //处理查询参数
-                string systems = Request.QueryString["System"];
+                string system = Request.QueryString["System"];
                 ViewBag.Search = base.keywords;
-                ViewData["System"] = systems;
-                ViewData["Systemlist"] = SystemManage.LoadSystemInfo(CurrentUser.System_Id);
+                ViewData["System"] = system;
+                ViewData["Systemlist"] = SystemManage.LoadAll(null);
 
-                return View(BindList(systems));
+                return View(BindList(system));
             }
             catch (Exception e)
             {
@@ -77,7 +87,7 @@ namespace WebPage.Areas.SysManage.Controllers
                 //页面类型
                 ViewData["ModuleType"] = Enum.GetNames(typeof(enumModuleType));
                 //加载用户可操作的系统
-                ViewData["Systemlist"] = SystemManage.LoadSystemInfo(CurrentUser.System_Id);
+                ViewData["Systemlist"] = SystemManage.LoadAll(null);
 
                 ViewData["Modules"] = BindList(_entity.FK_BELONGSYSTEM);
 
@@ -233,16 +243,17 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <param name="systems">系统ID</param>
         /// <returns></returns>
-        private object BindList(string systems)
+        private object BindList(string system)
         {         
             var query = ModuleManage.LoadAll(null);
-            if (!string.IsNullOrEmpty(systems))
+            if (!string.IsNullOrEmpty(system))
             {
-                query = query.Where(p => p.FK_BELONGSYSTEM == systems);
-            }else
-            {
-                query = query.Where(p => CurrentUser.System_Id.Any(e => e == p.FK_BELONGSYSTEM));
+                query = query.Where(p => p.FK_BELONGSYSTEM == system);
             }
+            //else
+            //{
+            //    query = query.Where(p => CurrentUser.System_Id.Any(e => e == p.FK_BELONGSYSTEM));
+            //}
             //递归排序
             var entity = ModuleManage.RecursiveModule(query.ToList())
                 .Select(p => new

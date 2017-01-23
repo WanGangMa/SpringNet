@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Domain;
 using Service.IService;
 
@@ -13,7 +11,12 @@ namespace Service.ServiceImp
     /// </summary>
     public class RolePermissionManage : RepositoryBase<Domain.SYS_ROLE_PERMISSION>, IService.IRolePermissionManage
     {
-        IPermissionManage PermissionManage { get; set; }
+        IPermissionManage PermissionManage;
+
+        public RolePermissionManage(IPermissionManage PermissionManage)
+        {
+            this.PermissionManage = PermissionManage;
+        }
         /// <summary>
         /// 保存角色权限
         /// </summary>

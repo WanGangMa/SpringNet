@@ -269,7 +269,7 @@ var dig = {
             type: "warning",
             showCancelButton: true,
             closeOnConfirm: false,
-            confirmButtonText: "确定",
+            confirmButtonText: "是的,我确定",
             confirmButtonColor: "#ec6c62",
             closeOnConfirm: false,
             closeOnCancel: false
@@ -609,5 +609,255 @@ var toasError = {
             "hideMethod": "fadeOut"
         }
         toastr.error(n, t);
+    }
+}
+
+//framework
+$.browser = function () {
+    var userAgent = navigator.userAgent;
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (isOpera) {
+        return "Opera"
+    };
+    if (userAgent.indexOf("Firefox") > -1) {
+        return "FF";
+    }
+    if (userAgent.indexOf("Chrome") > -1) {
+        if (window.navigator.webkitPersistentStorage.toString().indexOf('DeprecatedStorageQuota') > -1) {
+            return "Chrome";
+        } else {
+            return "360";
+        }
+    }
+    if (userAgent.indexOf("Safari") > -1) {
+        return "Safari";
+    }
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        return "IE";
+    };
+}
+
+$.download = function (url, data, method) {
+    if (url && data) {
+        data = typeof data == 'string' ? data : jQuery.param(data);
+        var inputs = '';
+        $.each(data.split('&'), function () {
+            var pair = this.split('=');
+            inputs += '<input type="hidden" name="' + pair[0] + '" value="' + pair[1] + '" />';
+        });
+        $('<form action="' + url + '" method="' + (method || 'post') + '">' + inputs + '</form>').appendTo('body').submit().remove();
+    };
+};
+
+$.loading = function (bool, text) {
+    var $loadingpage = top.$("#loadingPage");
+    var $loadingtext = $loadingpage.find('.loading-content');
+    if (bool) {
+        $loadingpage.show();
+    } else {
+        if ($loadingtext.attr('istableloading') == undefined) {
+            $loadingpage.hide();
+        }
+    }
+    if (!!text) {
+        $loadingtext.html(text);
+    } else {
+        $loadingtext.html("数据加载中，请稍后…");
+    }
+    $loadingtext.css("left", (top.$('body').width() - $loadingtext.width()) / 2 - 50);
+    $loadingtext.css("top", (top.$('body').height() - $loadingtext.height()) / 2);
+}
+
+$.reload = function () {
+    location.reload();
+    return false;
+}
+
+$.currentWindow = function () {
+    var iframeName = top.$(".J_iframe:inline").attr("name");
+    return top.frames[iframeName];
+}
+
+var myLayer = {
+    open: function (options) {
+        var defaults = {
+            id: null,
+            title: '系统窗口',
+            width: "800px",
+            height: "520px",
+            maxmin :true,
+            url: '',
+            shade: 0.3,
+            //btn: ['确认保存', '取消返回'],
+            //btnAlign: 'c',
+            //btnClass: ['btn btn-primary', 'btn btn-warning'],
+            callBack: null
+        };
+        var options = $.extend(defaults, options);
+        var _width = top.$(window).width() > parseInt(options.width.replace('px', '')) ? options.width : top.$(window).width() + 'px';
+        var _height = top.$(window).height() > parseInt(options.height.replace('px', '')) ? options.height : top.$(window).height() + 'px';
+        top.layer.open({
+            id: options.id,
+            type: 2,
+            shade: options.shade,
+            title: options.title,
+            fix: false,
+            maxmin:options.maxmin,
+            area: [_width, _height],
+            content: options.url,
+            //btn: options.btn,
+            //btnAlign: options.btnAlign,
+            //btnClass: options.btnClass,
+            yes: function () {
+                options.callBack(options.id)
+            }, cancel: function () {
+                return true;
+            }
+        });
+    },
+    alert: function (text, type) {
+        var icon = "";
+        if (type == 'success') {
+            icon = "fa-check-circle";
+        }
+        if (type == 'error') {
+            icon = "fa-times-circle";
+        }
+        if (type == 'warning') {
+            icon = "fa-exclamation-circle";
+        }
+        top.layer.alert(content, {
+            icon: icon,
+            title: "系统提示",
+            btn: ['确认'],
+            btnClass: ['btn btn-primary'],
+        });
+    },
+    confirm: function (text, callBack) {
+        top.layer.confirm(content, {
+            icon: "fa-exclamation-circle",
+            title: "系统提示",
+            btn: ['确认', '取消'],
+            btnClass: ['btn btn-primary', 'btn btn-danger'],
+        }, function () {
+            callBack(true);
+        }, function () {
+            callBack(false)
+        });
+    },
+    msg: function (text, type) {
+        if (type != undefined) {
+            var icon = "";
+            if (type == 'success') {
+                icon = "fa-check-circle";
+            }
+            if (type == 'error') {
+                icon = "fa-times-circle";
+            }
+            if (type == 'warning') {
+                icon = "fa-exclamation-circle";
+            }
+            top.layer.msg(content, { icon: icon, time: 4000, shift: 5 });
+            top.$(".layui-layer-msg").find('i.' + icon).parents('.layui-layer-msg').addClass('layui-layer-msg-' + type);
+        } else {
+            top.layer.msg(content);
+        }
+    },
+    close: function () {
+        //当你在iframe页面关闭自身时
+        var index = top.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        top.layer.close(index); //再执行关闭   
+    }
+
+}
+
+var myForm = {
+    submit: function (options) {
+        var defaults = {
+            url: "",
+            param: [],
+            loading: "正在提交数据...",
+            success: null,
+            close: true
+        };
+        var options = $.extend(defaults, options);
+        $.loading(true, options.loading);
+        window.setTimeout(function () {
+            if ($('[name=__RequestVerificationToken]').length > 0) {
+                options.param["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+            }
+            $.ajax({
+                url: options.url,
+                data: options.param,
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if (data.state == "success") {
+                        options.success(data);
+                        myLayer.msg(data.message, data.state);
+                        if (options.close == true) {
+                            myLayer.close();
+                        }
+                    } else {
+                        myLayer.alert(data.message, data.state);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $.loading(false);
+                    myLayer.msg(errorThrown, "error");
+                },
+                beforeSend: function () {
+                    $.loading(true, options.loading);
+                },
+                complete: function () {
+                    $.loading(false);
+                }
+            });
+        }, 500);
+    },
+    del: function (option) {
+        var defaults = {
+            prompt: "您确定要删除该些数据吗？",
+            url: "",
+            param: [],
+            loading: "正在删除数据...",
+            success: null,
+            close: true
+        };
+        var options = $.extend(defaults, options);
+        if ($('[name=__RequestVerificationToken]').length > 0) {
+            options.param["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+        }
+        myLayer.confirm(options.prompt, function (r) {
+            if (r) {
+                $.loading(true, options.loading);
+                window.setTimeout(function () {
+                    $.ajax({
+                        url: options.url,
+                        data: options.param,
+                        type: "post",
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.state == "success") {
+                                options.success(data);
+                                myLayer.msg(data.message, data.state);
+                            } else {
+                                myLayer.alert(data.message, data.state);
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            $.loading(false);
+                            myLayer.msg(errorThrown, "error");
+                        },
+                        beforeSend: function () {
+                            $.loading(true, options.loading);
+                        },
+                        complete: function () {
+                            $.loading(false);
+                        }
+                    });
+                }, 500);
+            }
+        });
     }
 }

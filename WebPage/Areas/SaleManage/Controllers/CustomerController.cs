@@ -2,59 +2,25 @@
 using Service.IService;
 using System.Data;
 using System.Data.SqlClient;
-using System.Collections;
-using System.Collections.Generic;
 using Common;
-using Domain;
 using System.Linq;
 
 namespace WebPage.Areas.SaleManage.Controllers
 {
-    interface IcatchMouse
-    {
-        string canCatch();
-    }
-
-    interface Ieat
-    {
-        string eat();
-    }
-
-    public class cat : IcatchMouse, Ieat
-    {
-        public string canCatch()
-        {
-            return "I get mouse";
-        }
-
-        string Ieat.eat()
-        {
-            return "have lunch";
-        }
-    }
-
-    public class singlet
-    {
-        private static singlet ins;
-        private singlet() { }
-
-        public static singlet getins()
-        {
-            if (ins == null)
-            {
-                ins = new singlet();
-
-            }
-            return ins;
-        }
-    }
     public class CustomerController : WebPage.Controllers.BaseController
     {
-        singlet s = singlet.getins();
         #region 容器聲明
-        public ICustomerManage CustomerManage { get; set; }
-
-        public IPlaceInfoManage PlaceInfoManage { get; set; }
+        ICustomerManage CustomerManage;
+        IPlaceInfoManage PlaceInfoManage;
+        public CustomerController
+            (
+                ICustomerManage _customer,
+                IPlaceInfoManage _place
+            )
+        {
+            this.CustomerManage = _customer;
+            this.PlaceInfoManage = _place;
+        }
         #endregion
 
         #region 基本視圖
@@ -72,6 +38,23 @@ namespace WebPage.Areas.SaleManage.Controllers
                 return PartialView("DataView", BindList(Province, CustomerState));
             }
             return View(BindList(Province, CustomerState));
+        }
+
+        public ActionResult Index2(/*string name ,string year,string month,string title*/)
+        {
+            var list = CustomerManage.LoadAll(null).Select(x => new 
+            {
+                a =x.s_CustomerID,
+                b = x.t_MonthlyCustomer.s_CreditLine,
+                c = x.s_CustomerName
+            }).ToList();
+            return View(new { i=1,list=list});
+        }
+
+        [HttpPost]
+        public ActionResult Index2(string a)
+        {
+            return Content(a);
         }
         #endregion
 
@@ -103,7 +86,7 @@ namespace WebPage.Areas.SaleManage.Controllers
             //排序
             query = query.OrderByDescending(p => p.s_AddTime);
             //分页
-            var result = this.CustomerManage.Query(query, page, pagesize);
+            var result = this.CustomerManage.Query(query, pageindex, pagesize);
 
             var data = result.List.Select(x => new
             {
@@ -112,8 +95,8 @@ namespace WebPage.Areas.SaleManage.Controllers
                 x.s_CustomerState,
                 x.s_Telephone,
                 s_Province = PlaceInfoManage.Get(n => n.s_PlaceID == x.s_Province)?.s_PlaceName,
-                s_City = PlaceInfoManage.Get(n=>n.s_PlaceID==x.s_City)?.s_PlaceName,
-                s_County=PlaceInfoManage.Get(n=>n.s_PlaceID==x.s_County)?.s_PlaceName,
+                s_City = PlaceInfoManage.Get(n => n.s_PlaceID == x.s_City)?.s_PlaceName,
+                s_County = PlaceInfoManage.Get(n => n.s_PlaceID == x.s_County)?.s_PlaceName,
                 x.s_AddTime
             }).ToList();
 

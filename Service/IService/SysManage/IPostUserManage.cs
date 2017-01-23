@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Service.IService
 {
@@ -9,7 +6,7 @@ namespace Service.IService
     /// 岗位用户关系业务接口
     ///  2016-05-19
     /// </summary>
-    public interface IPostUserManage : IRepository<Domain.SYS_POST_USER>
+    public interface IPostUserManage : IRepository<Domain.SYS_POST_USER>, IAutofac
     {
         /// <summary>
         /// 根据岗位ID获取人员集合，可传递多个岗位ID

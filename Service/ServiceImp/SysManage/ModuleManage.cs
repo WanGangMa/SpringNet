@@ -3,7 +3,6 @@ using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Transactions;
 
 namespace Service.ServiceImp
@@ -15,22 +14,20 @@ namespace Service.ServiceImp
     public class ModuleManage : RepositoryBase<Domain.SYS_MODULE>, IService.IModuleManage
     {
 
-        private IPermissionManage PermissionManage
-        {
-            get;
-            set;
-        }
+        IPermissionManage PermissionManage;
+        IUserPermissionManage UserPermissionManage;
+        IRolePermissionManage RolePermissionManage;
 
-        private IUserPermissionManage UserPermissionManage
+        public ModuleManage
+            (
+                IPermissionManage PermissionManage,
+                IUserPermissionManage UserPermissionManage,
+                IRolePermissionManage RolePermissionManage
+            )
         {
-            get;
-            set;
-        }
-
-        private IRolePermissionManage RolePermissionManage
-        {
-            get;
-            set;
+            this.PermissionManage = PermissionManage;
+            this.UserPermissionManage = UserPermissionManage;
+            this.RolePermissionManage = RolePermissionManage;
         }
 
         /// <summary>

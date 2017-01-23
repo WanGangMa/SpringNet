@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Common;
 using Domain;
 using Microsoft.AspNet.SignalR;
 using Service.IService;
-using Spring.Context.Support;
+using Autofac;
+using System.Web.Mvc;
 
 namespace WebPage.Hubs
 {
     public class ChatHub:Hub
     {
-        IUserManage UserManage = ContextRegistry.GetContext().GetObject("Service.User") as IUserManage;
+        IUserManage UserManage = DependencyResolver.Current.GetService<IUserManage>();
 
-        IDepartmentManage DepartmentManage = ContextRegistry.GetContext().GetObject("Service.Department") as IDepartmentManage;
+        IDepartmentManage DepartmentManage = DependencyResolver.Current.GetService<IDepartmentManage>();
 
-        ICodeManage CodeManage = ContextRegistry.GetContext().GetObject("Service.Code") as ICodeManage;
+        ICodeManage CodeManage = DependencyResolver.Current.GetService<ICodeManage>();
 
-        IUserOnlineManage UserOnlineManage = ContextRegistry.GetContext().GetObject("Service.UserOnline") as IUserOnlineManage;
+        IUserOnlineManage UserOnlineManage = DependencyResolver.Current.GetService<IUserOnlineManage>();
 
-        IChatMessageManage ChatMessageManage = ContextRegistry.GetContext().GetObject("Service.ChatMessage") as IChatMessageManage;
+        IChatMessageManage ChatMessageManage = DependencyResolver.Current.GetService<IChatMessageManage>();
         /// <summary>
         /// 用户登录注册信息
         /// </summary>

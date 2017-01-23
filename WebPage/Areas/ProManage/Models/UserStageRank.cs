@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WebPage.Areas.ProManage.Controllers
+﻿namespace WebPage.Areas.ProManage.Controllers
 {
     public class UserStageRank
     {

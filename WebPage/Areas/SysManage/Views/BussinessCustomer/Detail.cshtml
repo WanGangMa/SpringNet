@@ -11,22 +11,22 @@
     }
 </style>
 @using (Ajax.BeginForm("Save", null, new AjaxOptions()
-{
-    HttpMethod = "Post",
-    OnBegin = "SubAjax.Loading",
-    OnComplete = "SubAjax.Complate",
-    OnFailure = "SubAjax.Failure",
-    OnSuccess = "SubAjax.Success"
-},
-                                           new { @class = "form-horizontal dig-from", @role = "form" }))
+                           {
+                               HttpMethod = "Post",
+                               OnBegin = "SubAjax.Loading",
+                               OnComplete = "SubAjax.Complate",
+                               OnFailure = "SubAjax.Failure",
+                               OnSuccess = "SubAjax.Success"
+                           },
+                               new { @class = "form-horizontal dig-from", @role = "form" }))
 {
     @Html.HiddenFor(p => p.ID)
-    @Html.HiddenFor(p => p.FK_RELATIONID)
-    @Html.HiddenFor(p => p.Fk_DepartId)
+    @Html.HiddenFor(p=>p.FK_RELATIONID)
+    @Html.HiddenFor(p=>p.Fk_DepartId)
     @Html.HiddenFor(p => p.CreateUser)
     @Html.HiddenFor(p => p.CreateDate)
     @Html.Hidden("ContentId", content.ID)
-    <div class="wrapper wrapper-content animated fadeInUp">
+    <div class="wrapper wrapper-content">
         <div class="row">
             <div class="ibox-detail-title">
                 <i class="fa fa-pencil-square-o"></i>添加/修改客户
@@ -49,7 +49,7 @@
                                     @{
                                         foreach (var item in ViewBag.KHLX)
                                         {
-                                            <option value="@item.CODEVALUE" @(Model.CustomerStyle != null && Model.CustomerStyle.ToString() == @item.CODEVALUE ? "selected" : "")>@item.NAMETEXT</option>
+                                            <option value="@item.CODEVALUE" @(Model.CustomerStyle!=null&&Model.CustomerStyle.ToString() == @item.CODEVALUE ? "selected" : "")>@item.NAMETEXT</option>
                                         }
                                     }
                                 </select>
@@ -78,23 +78,23 @@
                     </div>
                 </div>
                 <div class="hr-line-dashed"></div>
-                <div class="form-group">
-                    <label class="col-xs-2 control-label">所在地：</label>
-                    <div class="col-xs-10">
-                        @Html.HiddenFor(p => p.CompanyProvince)
-                        @Html.HiddenFor(p => p.CompanyCity)
-                        @Html.HiddenFor(p => p.CompanyArea)
-                        <select name="Province" id="Province" onchange="SelectCity('Province', 'City')" class="form-control input-sm  input-s-sm inline">
-                            <option value="-1">--请选择--</option>
-                        </select>
-                        <select name="City" id="City" onchange="SelectCountry('City', 'Area')" class="form-control input-sm  input-s-sm inline">
-                            <option value="-1">--请选择--</option>
-                        </select>
-                        <select name="Area" id="Area" onchange="SelectAreas('Area')" class="form-control input-sm  input-s-sm inline">
-                            <option value="-1">--请选择--</option>
-                        </select>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label class="col-xs-2 control-label">所在地：</label>
+                            <div class="col-xs-10">
+                                @Html.HiddenFor(p => p.CompanyProvince)
+                                @Html.HiddenFor(p => p.CompanyCity)
+                                @Html.HiddenFor(p => p.CompanyArea)
+                                <select name="Province" id="Province" onchange="SelectCity('Province', 'City')" class="form-control input-sm  input-s-sm inline">
+                                    <option value="-1">--请选择--</option>
+                                </select>
+                                <select name="City" id="City" onchange="SelectCountry('City', 'Area')" class="form-control input-sm  input-s-sm inline">
+                                    <option value="-1">--请选择--</option>
+                                </select>
+                                <select name="Area" id="Area" onchange="SelectAreas('Area')" class="form-control input-sm  input-s-sm inline">
+                                    <option value="-1">--请选择--</option>
+                                </select>
+                            </div>
+                        </div>
                 <div class="hr-line-dashed"></div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">通讯地址：</label>
@@ -140,7 +140,7 @@
                         <div class="form-group">
                             <label class="col-xs-4 control-label">QQ：</label>
                             <div class="col-xs-8">
-                                @Html.TextBoxFor(p => p.ChargePersionQQ, new { @class = "form-control", @placeholder = "请输入负责人QQ" })
+                               @Html.TextBoxFor(p => p.ChargePersionQQ, new { @class = "form-control", @placeholder = "请输入负责人QQ" })
                             </div>
                         </div>
                     </div>
@@ -183,11 +183,11 @@
             </div>
         </div>
     </div>
-                                        }
+}
 @section scripts{
-    <script type="text/javascript" src="/Content/ueditor/ueditor.config.js"></script>
-    <script type="text/javascript" src="/Content/ueditor/ueditor.all.min.js"></script>
-    <script type="text/javascript" src="/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="/Content/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/Content/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
     <script type="text/javascript">
         $(function () {
             $('.form-horizontal').initValidform();

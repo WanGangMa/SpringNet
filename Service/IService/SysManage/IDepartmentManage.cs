@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Service.IService
 {
@@ -9,7 +6,7 @@ namespace Service.IService
     /// Service层部门管理接口
     ///  2016-05-19
     /// </summary>
-    public interface IDepartmentManage : IRepository<Domain.SYS_DEPARTMENT>
+    public interface IDepartmentManage : IRepository<Domain.SYS_DEPARTMENT>, IAutofac
     {
         /// <summary>
         /// 递归部门列表，返回按级别排序

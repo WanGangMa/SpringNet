@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Service.IService
+﻿namespace Service.IService
 {
-    public interface IPlaceInfoManage:IRepository<Domain.t_PlaceInfo>
+    public interface IPlaceInfoManage:IRepository<Domain.t_PlaceInfo>, IAutofac
     {
     }
 }

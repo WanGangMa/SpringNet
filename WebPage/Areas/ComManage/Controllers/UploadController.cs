@@ -14,12 +14,16 @@ namespace WebPage.Areas.ComManage.Controllers
 {
     public class UploadController : BaseController
     {
-        IUploadManage UploadManage{get;set;}
+        IUploadManage UploadManage;
+        public UploadController(IUploadManage UploadManage)
+        {
+            this.UploadManage = UploadManage;
+        }
         /// <summary>
         /// 文件管理默认页面
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "View")]
         public ActionResult Home()
         {
             var fileExt = Request.QueryString["fileExt"] ?? "";
@@ -70,7 +74,7 @@ namespace WebPage.Areas.ComManage.Controllers
                 }
 
             }
-            catch (Exception e)
+            catch 
             {
                 jsonM.Status = "err";
                 jsonM.Msg = "获取文件失败！";
@@ -83,7 +87,7 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 删除文件或文件夹
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Remove")]
         public ActionResult DeleteBy()
         {
             var jsonM = new JsonHelper() { Status = "y", Msg = "success" };
@@ -114,14 +118,14 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 复制文件到文件夹
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Copy")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Copy")]
         public ActionResult Copy(string files)
         {
             ViewData["Files"] = files;
             ViewData["spath"] = ConfigurationManager.AppSettings["uppath"];
             return View();
         }
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Copy")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Copy")]
         public ActionResult CopyFiles()
         {
             var json = new JsonHelper() { Msg = "复制文件完成", Status = "n" };
@@ -151,14 +155,14 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 移动文件到文件夹
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Cut")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Cut")]
         public ActionResult Cut(string files)
         {
             ViewData["Files"] = files;
             ViewData["spath"] = ConfigurationManager.AppSettings["uppath"];
             return View();
         }
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Cut")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Cut")]
         public ActionResult CutFiles()
         {
             var json = new JsonHelper() { Msg = "移动文件完成", Status = "n" };
@@ -188,14 +192,14 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 压缩文件
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Compress")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Compress")]
         public ActionResult Compress(string files)
         {
             ViewData["Files"] = files;
             ViewData["spath"] = ConfigurationManager.AppSettings["uppath"];
             return View();
         }
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Compress")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Compress")]
         public ActionResult CompressFiles()
         {
             var json = new JsonHelper() { Msg = "压缩文件完成", Status = "n" };
@@ -225,14 +229,14 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 解压文件
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Expand")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Expand")]
         public ActionResult Expand(string files)
         {
             ViewData["Files"] = files;
             ViewData["spath"] = ConfigurationManager.AppSettings["uppath"];
             return View();
         }
-        [UserAuthorizeAttribute(ModuleAlias = "Files", OperaAction = "Expand")]
+        [UserAuthorize(ModuleAlias = "Files", OperaAction = "Expand")]
         public ActionResult ExpandFiles()
         {
             var json = new JsonHelper() { Msg = "解压文件完成", Status = "n" };

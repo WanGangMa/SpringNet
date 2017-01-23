@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain;
 
 namespace Service.IService
 {
-    public interface ICodeAreaManage : IRepository<SYS_CODE_AREA>
+    public interface ICodeAreaManage : IRepository<SYS_CODE_AREA>, IAutofac
     {
         IQueryable<SYS_CODE_AREA> LoadProvince();
 

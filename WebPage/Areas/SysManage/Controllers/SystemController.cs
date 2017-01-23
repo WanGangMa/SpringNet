@@ -1,10 +1,8 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Web.Mvc;
 using WebPage.Controllers;
 
@@ -12,18 +10,16 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class SystemController : BaseController
     {
-
-
-        private ISystemManage SystemManage
+        ISystemManage SystemManage;
+        IModuleManage ModuleManage;
+        public SystemController
+            (
+                ISystemManage SystemManage,
+                IModuleManage ModuleManage
+            )
         {
-            get;
-            set;
-        }
-
-        private IModuleManage ModuleManage
-        {
-            get;
-            set;
+            this.SystemManage = SystemManage;
+            this.ModuleManage = ModuleManage;
         }
 
         [UserAuthorize(ModuleAlias = "SystemSet", OperaAction = "View")]
@@ -31,15 +27,7 @@ namespace WebPage.Areas.SysManage.Controllers
         {
             string text = base.Request.QueryString["status"];
             base.ViewData["status"] = text;
-            //if (SystemController.< Index > o__SiteContainer0.<> p__Site1 == null)
-            //{
-            //    SystemController.< Index > o__SiteContainer0.<> p__Site1 = CallSite<Func<CallSite, object, string, object>>.Create(Binder.SetMember(CSharpBinderFlags.None, "Search", typeof(SystemController), new CSharpArgumentInfo[]
-            //    {
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null)
-            //    }));
-            //}
-            //SystemController.< Index > o__SiteContainer0.<> p__Site1.Target(SystemController.< Index > o__SiteContainer0.<> p__Site1, base.ViewBag, base.keywords);
+          
             return base.View(this.BindList(text));
         }
 
@@ -52,7 +40,7 @@ namespace WebPage.Areas.SysManage.Controllers
         [ValidateInput(false), UserAuthorize(ModuleAlias = "SystemSet", OperaAction = "Add,Edit")]
         public ActionResult Save(SYS_SYSTEM entity)
         {
-            bool flag = false;
+            bool isAdd = true;
             JsonHelper jsonHelper = new JsonHelper
             {
                 Msg = "保存系统成功",
@@ -69,11 +57,11 @@ namespace WebPage.Areas.SysManage.Controllers
                     }
                     else
                     {
-                        flag = true;
+                        isAdd = false;
                     }
                     if (!this.SystemManage.IsExist((SYS_SYSTEM p) => p.ID != entity.ID && p.NAME == entity.NAME && p.SITEURL == entity.SITEURL))
                     {
-                        if (this.SystemManage.SaveOrUpdate(entity, flag))
+                        if (this.SystemManage.SaveOrUpdate(entity, isAdd))
                         {
                             jsonHelper.Status = "y";
                         }
@@ -91,13 +79,13 @@ namespace WebPage.Areas.SysManage.Controllers
                 {
                     jsonHelper.Msg = "未找到需要保存的系统";
                 }
-                if (flag)
+                if (isAdd)
                 {
-                    base.WriteLog(enumOperator.Edit, "修改系统，结果：" + jsonHelper.Msg, enumLog4net.INFO);
+                    base.WriteLog(enumOperator.Add, "添加系统，结果：" + jsonHelper.Msg, enumLog4net.INFO);
                 }
                 else
                 {
-                    base.WriteLog(enumOperator.Add, "添加系统，结果：" + jsonHelper.Msg, enumLog4net.INFO);
+                    base.WriteLog(enumOperator.Edit, "修改系统，结果：" + jsonHelper.Msg, enumLog4net.INFO);                  
                 }
             }
             catch (Exception e)
@@ -158,7 +146,7 @@ namespace WebPage.Areas.SysManage.Controllers
 
         private PageInfo BindList(string status)
         {
-            IQueryable<SYS_SYSTEM> queryable = this.SystemManage.LoadAll((SYS_SYSTEM p) => this.CurrentUser.System_Id.Any((string e) => e == p.ID));
+            IQueryable<SYS_SYSTEM> queryable = this.SystemManage.LoadAll(null);
             if (!string.IsNullOrEmpty(status))
             {
                 bool islogin = status == "True";
@@ -176,7 +164,7 @@ namespace WebPage.Areas.SysManage.Controllers
             queryable = from p in queryable
                         orderby p.CREATEDATE descending
                         select p;
-            PageInfo<SYS_SYSTEM> pageInfo = this.SystemManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<SYS_SYSTEM> pageInfo = this.SystemManage.Query(queryable, base.pageindex, base.pagesize);
             var obj = pageInfo.List.Select((SYS_SYSTEM p, int i) => new
             {
                 ID = p.ID,
@@ -185,17 +173,7 @@ namespace WebPage.Areas.SysManage.Controllers
                 ISLOGIN = p.IS_LOGIN ? "<i class=\"fa fa-circle text-navy\"></i>" : "<i class=\"fa fa-circle text-danger\"></i>",
                 CREATEDATE = p.CREATEDATE
             });
-            //if (SystemController.< BindList > o__SiteContainera.<> p__Siteb == null)
-            //{
-            //    SystemController.< BindList > o__SiteContainera.<> p__Siteb = CallSite<Func<CallSite, Type, int, int, int, object, PageInfo>>.Create(Binder.InvokeConstructor(CSharpBinderFlags.None, typeof(SystemController), new CSharpArgumentInfo[]
-            //    {
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType | CSharpArgumentInfoFlags.IsStaticType, null),
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null),
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null),
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null),
-            //        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
-            //    }));
-            //}
+          
             return new PageInfo( pageInfo.Index, pageInfo.PageSize, pageInfo.Count, JsonConverter.JsonClass(obj));
         }
     }

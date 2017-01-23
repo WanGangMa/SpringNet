@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model Common.PageInfo
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content">
 @using (Ajax.BeginForm("Outbox", null, new AjaxOptions() { }, new { @id = "form1", @class = "form-horizontal", @method = "get" }))
                     {
         <div class="ibox mail-box-header">

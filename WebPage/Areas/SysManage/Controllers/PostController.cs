@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using Service.IService;
@@ -15,19 +13,33 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 岗位
         /// </summary>
-        IPostManage PostManage { get; set; }
+        IPostManage PostManage ;
         /// <summary>
         /// 部门
         /// </summary>
-        IDepartmentManage DepartmentManage { get; set; }
+        IDepartmentManage DepartmentManage ;
         /// <summary>
         /// 字典编码
         /// </summary>
-        ICodeManage CodeManage { get; set; }
+        ICodeManage CodeManage ;
         /// <summary>
         /// 岗位人员
         /// </summary>
-        IPostUserManage PostUserManage { get; set; }
+        IPostUserManage PostUserManage ;
+
+        public PostController
+            (
+                IPostManage PostManage ,
+                IDepartmentManage DepartmentManage,
+                ICodeManage CodeManage,
+                IPostUserManage PostUserManage
+            )
+        {
+            this.PostManage = PostManage;
+            this.DepartmentManage = DepartmentManage;
+            this.CodeManage = CodeManage;
+            this.PostUserManage = PostUserManage;
+        }
         #endregion
 
         [UserAuthorize(ModuleAlias = "Post", OperaAction = "View")]
@@ -39,7 +51,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 岗位管理 岗位列表
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Post", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Post", OperaAction = "View")]
         public ActionResult Index()
         {
             try
@@ -101,7 +113,7 @@ namespace WebPage.Areas.SysManage.Controllers
             //排序
             query = query.OrderBy(p => p.SHOWORDER);
             //分页
-            var result = this.PostManage.Query(query, page, pagesize);
+            var result = this.PostManage.Query(query, pageindex, pagesize);
 
             var list = result.List.Select(p => new
             {
@@ -121,7 +133,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [UserAuthorizeAttribute(ModuleAlias = "Post", OperaAction = "Detail")]
+        [UserAuthorize(ModuleAlias = "Post", OperaAction = "Detail")]
         public ActionResult Detail(string id)
         {
             try
@@ -145,11 +157,11 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 保存岗位
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Post", OperaAction = "Add,Edit")]
+        [UserAuthorize(ModuleAlias = "Post", OperaAction = "Add,Edit")]
         public ActionResult Save(Domain.SYS_POST entity)
         {
 
-            bool isEdit = false;
+            bool isAdd = true;
             var json = new JsonHelper() { Msg = "保存岗位成功", Status = "n", ReUrl = "/Post/Index" };
             try
             {
@@ -168,12 +180,12 @@ namespace WebPage.Areas.SysManage.Controllers
                     {
                         entity.UPDATEDATE = DateTime.Now;
                         entity.UPDATEUSER = this.CurrentUser.Name;
-                        isEdit = true;
+                        isAdd = false;
                     }
                     //判断岗位是否重名 
                     if (!this.PostManage.IsExist(p => p.POSTNAME == entity.POSTNAME && p.ID != entity.ID))
                     {
-                        if (PostManage.SaveOrUpdate(entity, isEdit))
+                        if (PostManage.SaveOrUpdate(entity, isAdd))
                         {
                             json.Status = "y";
                         }
@@ -191,7 +203,7 @@ namespace WebPage.Areas.SysManage.Controllers
                 {
                     json.Msg = "未找到需要保存的岗位";
                 }
-                if (isEdit)
+                if (isAdd)
                 {
                     WriteLog(enumOperator.Edit, "修改岗位，结果：" + json.Msg, enumLog4net.INFO);
                 }
@@ -213,7 +225,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 删除岗位
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Post", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "Post", OperaAction = "Remove")]
         public ActionResult Delete(string idList)
         {
             JsonHelper json = new JsonHelper() { Msg = "删除岗位完毕", Status = "n" };

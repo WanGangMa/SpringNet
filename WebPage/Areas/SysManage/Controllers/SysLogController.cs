@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using Domain;
@@ -12,7 +11,11 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class SysLogController : BaseController
     {
-        ISyslogManage SyslogManage { get; set; }
+        ISyslogManage SyslogManage;
+        public SysLogController(ISyslogManage SyslogManage)
+        {
+            this.SyslogManage = SyslogManage;
+        }
 
         [UserAuthorize(ModuleAlias = "Syslog", OperaAction = "View")]
         public ActionResult Index()
@@ -81,7 +84,7 @@ namespace WebPage.Areas.SysManage.Controllers
             }
             return SyslogManage.Query(from p in SyslogManage.LoadAll(expression)
                                            orderby p.DATES descending
-                                           select p, base.page, base.pagesize);
+                                           select p, base.pageindex, base.pagesize);
         }
     }
 }

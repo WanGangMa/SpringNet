@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
 using Service.IService;
 using WebPage.Controllers;
@@ -16,39 +15,56 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 系统管理
         /// </summary>
-        ISystemManage SystemManage { get; set; }
+        ISystemManage SystemManage ;
         /// <summary>
         /// 权限管理
         /// </summary>
-        IPermissionManage PermissionManage { get; set; }
+        IPermissionManage PermissionManage ;
         /// <summary>
         /// 模块管理
         /// </summary>
-        IModuleManage ModuleManage { get; set; }
-
+        IModuleManage ModuleManage ;
         /// <summary>
         /// 预置编码管理
         /// </summary>
-        ICodeManage CodeManage { get; set; }
-
+        ICodeManage CodeManage ;
         /// <summary>
         /// 角色权限管理
         /// </summary>
-        IRolePermissionManage RolePermissionManage { get; set; }
-
+        IRolePermissionManage RolePermissionManage ;
         /// <summary>
         /// 用户权限管理
         /// </summary>
-        IUserPermissionManage UserPermissionManage { get; set; }
+        IUserPermissionManage UserPermissionManage ;
 
-        IRoleManage RoleManage { get; set; }
+        IRoleManage RoleManage ;
+
+        public PermissionController
+            (
+                ISystemManage SystemManage ,
+                IPermissionManage PermissionManage,
+                IModuleManage ModuleManage,
+                ICodeManage CodeManage,
+                IRolePermissionManage RolePermissionManage,
+                IUserPermissionManage UserPermissionManage,
+                IRoleManage RoleManage
+            )
+        {
+            this.SystemManage = SystemManage;
+            this.PermissionManage = PermissionManage;
+            this.ModuleManage = ModuleManage;
+            this.CodeManage = CodeManage;
+            this.RolePermissionManage = RolePermissionManage;
+            this.UserPermissionManage = UserPermissionManage;
+            this.RoleManage = RoleManage;
+        }
         #endregion
 
         /// <summary>
         /// 权限管理 默认页面
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "View")]
         public ActionResult Home()
         {
             try
@@ -68,7 +84,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 权限管理 权限列表
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "View")]
         public ActionResult Index()
         {
             try
@@ -116,7 +132,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "Detail")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "Detail")]
         public ActionResult Detail(int? id)
         {
             try
@@ -143,7 +159,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 保存权限
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "Add,Edit")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "Add,Edit")]
         public ActionResult Save(Domain.SYS_PERMISSION entity)
         {
             bool isEdit = false;
@@ -222,7 +238,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 删除权限
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "Remove")]
         public ActionResult Delete(string idList)
         {
             var json = new JsonHelper() { Msg = "删除权限成功", Status = "n" };
@@ -269,7 +285,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 初始化权限，默认增删改查详情
         /// <param name="id">模块ID</param>
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Permission", OperaAction = "Reset")]
+        [UserAuthorize(ModuleAlias = "Permission", OperaAction = "Reset")]
         public ActionResult Reset(string id)
         {
             var json = new JsonHelper() { Status = "n", Msg = "初始化完毕" };
@@ -431,7 +447,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 角色、用户分配权限
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "Allocation")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "Allocation")]
         public ActionResult PerAllocation()
         {
             //系统

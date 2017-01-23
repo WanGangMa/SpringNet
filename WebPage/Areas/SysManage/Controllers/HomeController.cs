@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Spring.Context.Support;
 using System.Web.Mvc;
 using Common;
 using Domain;
@@ -14,41 +12,32 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class HomeController : BaseController
     {
-       
-        private IModuleManage ModuleManage
-        {
-            get;
-            set;
-        }
+        #region 聲明容器
+        IModuleManage ModuleManage;
+        IProjectTeamManage ProjectTeamManage;
+        IMailinManage MailinManage;
+        IUserOnlineManage UserOnlineManage;
+        IDepartmentManage DepartmentManage;
+        IWorkAttendanceManage WorkAttendanceManage;
 
-        private IProjectTeamManage ProjectTeamManage
+        public HomeController
+            (
+                IModuleManage ModuleManage,
+                IProjectTeamManage ProjectTeamManage,
+                IMailinManage MailinManage,
+                IUserOnlineManage UserOnlineManage,
+                IDepartmentManage DepartmentManage,
+                IWorkAttendanceManage WorkAttendanceManage
+            )
         {
-            get;
-            set;
+            this.ModuleManage = ModuleManage;
+            this.ProjectTeamManage = ProjectTeamManage;
+            this.MailinManage = MailinManage;
+            this.UserOnlineManage = UserOnlineManage;
+            this.DepartmentManage = DepartmentManage;
+            this.WorkAttendanceManage = WorkAttendanceManage;
         }
-
-        private IMailinManage MailinManage
-        {
-            get;
-            set;
-        }
-        private IUserOnlineManage UserOnlineManage
-        {
-            get;
-            set;
-        }
-
-        private IDepartmentManage DepartmentManage
-        {
-            get;
-            set;
-        }
-
-        private IWorkAttendanceManage WorkAttendanceManage
-        {
-            get;
-            set;
-        }
+        #endregion
 
         public ActionResult Index()
         {

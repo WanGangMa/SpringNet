@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Service.IService
+﻿namespace Service.IService
 {
-    public interface IUserManage:IRepository<Domain.SYS_USER>
+    public interface IUserManage:IRepository<Domain.SYS_USER>,IAutofac
     {
         /// <summary>
         /// 管理用户登录验证,并返回用户信息与权限集合

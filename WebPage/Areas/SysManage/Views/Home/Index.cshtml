@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <title>信息管理平台</title>
+    <title>後台管理中心</title>
     <!--[if lt IE 8]>
     <meta http-equiv="refresh" content="0;ie.html" />
     <![endif]-->
@@ -27,6 +27,9 @@
     <link href="/Content/js/switchery/switchery.min.css" rel="stylesheet" />
 </head>
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="ajax-loader" style="cursor: progress; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: #fff; z-index: 10000; overflow: hidden;">
+        <img src="~/Content/images/ajax-loader.gif" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto;" />
+    </div>
     <div id="wrapper">
         <!--左侧导航开始-->
         <nav class="navbar-default navbar-static-side" role="navigation">
@@ -173,7 +176,7 @@
                         </li>
                         <li class="dropdown">
                             <a class="right-sidebar-toggle" aria-expanded="false">
-                                <i class="fa fa-tasks"></i> 事项
+                                <i class="fa fa-tasks"></i>事项
                             </a>
                         </li>
                     </ul>
@@ -385,7 +388,10 @@
                 <i class="fa fa-comments"></i>
             </a>
         </div>
-
+    </div>
+    <div id="loadingPage" style="display: none;">
+        <div class="loading-shade"></div>
+        <div class="loading-content" onclick="$.loading(false)">数据加载中，请稍后…</div>
     </div>
 </body>
 </html>
@@ -402,6 +408,7 @@
 <script type="text/javascript" src="/Content/js/admin/icheck.min.js"></script>
 <script type="text/javascript" src="/Content/js/select2/select2.min.js"></script>
 <script type="text/javascript" src="/Content/js/admin/datatables/colResizable-1.5.min.js"></script>
+<script type="text/javascript" src="~/Content/js/layer/layer.js"></script>
 <script type="text/javascript" src="/Content/js/laydate/laydate.js"></script>
 <script type="text/javascript" src="/Content/js/toastr/toastr.min.js"></script>
 <script type="text/javascript" src="/Content/js/switchery/switchery.min.js"></script>
@@ -410,7 +417,13 @@
     (function () {
         NProgress.start();
     })(jQuery)
-    $(window).load(function () { NProgress.done(); });
+
+    $(window).load(function () {
+        NProgress.done();
+        window.setTimeout(function () {
+            $('#ajax-loader').fadeOut();
+        }, 300);
+    });
     $(function () {
         WEB.INITIALIZATION();
         $("#J_Nav li").click(function () {

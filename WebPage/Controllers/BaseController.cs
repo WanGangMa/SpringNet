@@ -8,11 +8,14 @@ using Common;
 using Service;
 using Service.IService;
 using System.Text;
+using Autofac;
 
 namespace WebPage.Controllers
 {
     public class BaseController : Controller
     {
+       protected UnitOfWork uow = new UnitOfWork();
+
         #region 公用变量
         /// <summary>
         /// 查询关键词
@@ -21,7 +24,7 @@ namespace WebPage.Controllers
         /// <summary>
         /// 视图传递的分页页码
         /// </summary>
-        public int page { get; set; }
+        public int pageindex { get; set; }
         /// <summary>
         /// 视图传递的分页条数
         /// </summary>
@@ -29,7 +32,8 @@ namespace WebPage.Controllers
         /// <summary>
         /// 用户容器，公用
         /// </summary>
-        public IUserManage UserManage = Spring.Context.Support.ContextRegistry.GetContext().GetObject("Service.User") as IUserManage;
+
+        public IUserManage UserManage=DependencyResolver.Current.GetService<IUserManage>();
         #endregion
 
         protected IExtLog _log = ExtLogManager.GetLogger("dblog");
@@ -84,14 +88,13 @@ namespace WebPage.Controllers
             
             //分页页码
            object p = filterContext.HttpContext.Request["page"];
-            if (p == null || p.ToString() == "") { page = 1; } else { page = int.Parse(p.ToString()); }
-            //page= int.Parse( filterContext.HttpContext.Request.QueryString["pageindex"]??"1");
+            if (p == null || p.ToString() == "") { pageindex = 1; } else { pageindex = int.Parse(p.ToString()); }
             //搜索关键词
             string search = filterContext.HttpContext.Request.QueryString["Search"];
             if (!string.IsNullOrEmpty(search)) { keywords = search; }
             //显示分页条数
             string size = filterContext.HttpContext.Request.QueryString["example_length"];
-            if (!string.IsNullOrEmpty(size) && System.Text.RegularExpressions.Regex.IsMatch(size.ToString(), @"^\d+$")) { pagesize = int.Parse(size.ToString()); } else { pagesize = 3; }
+            if (!string.IsNullOrEmpty(size) && System.Text.RegularExpressions.Regex.IsMatch(size.ToString(), @"^\d+$")) { pagesize = int.Parse(size.ToString()); } else { pagesize = 10; }
             #endregion
         }
 

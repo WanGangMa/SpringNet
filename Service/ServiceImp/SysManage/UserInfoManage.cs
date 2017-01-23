@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Service.ServiceImp
+﻿namespace Service.ServiceImp
 {
     /// <summary>
     /// Service层用户拓展信息接口

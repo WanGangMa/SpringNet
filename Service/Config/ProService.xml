@@ -18,5 +18,4 @@
   <object id="Service.Pro.ProjectFilesManage" type="Service.ServiceImp.ProjectFilesManage,Service" singleton="false">
   </object>
   <!--项目管理end-->
-
 </objects>

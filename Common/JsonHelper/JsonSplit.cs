@@ -1,10 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Common
+﻿namespace Common
 {
     /// <summary>
     /// 判断字符串是否为JSON

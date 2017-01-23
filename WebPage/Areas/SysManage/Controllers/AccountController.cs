@@ -1,9 +1,7 @@
 ﻿using Common;
 using Service.IService;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace WebPage.Areas.SysManage.Controllers
@@ -15,11 +13,21 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 用户管理
         ///  2016-05-16
         /// </summary>
-        IUserManage UserManage { get; set; }
+        IUserManage UserManage;
         /// <summary>
         /// 用户在线管理
         /// </summary>
-        IUserOnlineManage UserOnlineManage { get; set; }
+        IUserOnlineManage UserOnlineManage;
+
+        public AccountController
+            (
+                IUserManage _UserManage,
+                IUserOnlineManage _UserOnlineManage
+            )
+        {
+            this.UserManage = _UserManage;
+            this.UserOnlineManage = _UserOnlineManage;
+        }
         /// <summary>
         /// 日志记录
         /// </summary>

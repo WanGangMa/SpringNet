@@ -1,12 +1,10 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Web.Mvc;
 using WebPage.Controllers;
 
@@ -15,11 +13,13 @@ namespace WebPage.Areas.SysManage.Controllers
     public class CodeController : BaseController
     {
 
-        private ICodeManage CodeManage
+        ICodeManage CodeManage;
+
+        public CodeController(ICodeManage CodeManage)
         {
-            get;
-            set;
+            this.CodeManage = CodeManage;
         }
+     
 
         [UserAuthorize(ModuleAlias = "Code", OperaAction = "View")]
         public ActionResult Index()
@@ -173,7 +173,7 @@ namespace WebPage.Areas.SysManage.Controllers
                                                 orderby p.SHOWORDER
                                                 orderby p.CODETYPE
                                                 select p;
-            return this.CodeManage.Query(query, base.page, base.pagesize);
+            return this.CodeManage.Query(query, base.pageindex, base.pagesize);
         }
 
         public ActionResult GetParentCode()

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using WebPage.Areas.ComManage.Models;
@@ -17,7 +16,7 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 系统备份加载列表
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Backup", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Backup", OperaAction = "View")]
         public ActionResult Index()
         {
             return View();
@@ -121,7 +120,7 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 备份程序文件
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Backup", OperaAction = "BackUpApplication")]
+        [UserAuthorize(ModuleAlias = "Backup", OperaAction = "BackUpApplication")]
         public ActionResult BackUpFiles()
         {
             var json = new JsonHelper() { Msg = "程序备份完成", Status = "n" };
@@ -153,7 +152,7 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 备份数据
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Backup", OperaAction = "BackUpDataBase")]
+        [UserAuthorize(ModuleAlias = "Backup", OperaAction = "BackUpDataBase")]
         public ActionResult BackUpData()
         {
             var json = new JsonHelper() { Msg = "数据备份完成", Status = "n" };
@@ -208,7 +207,7 @@ namespace WebPage.Areas.ComManage.Controllers
         /// 还原数据
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Restore", OperaAction = "RestoreData")]
+        [UserAuthorize(ModuleAlias = "Restore", OperaAction = "RestoreData")]
         public ActionResult RestoreData()
         {
             var json = new JsonHelper() { Msg = "数据还原完成", Status = "n" };

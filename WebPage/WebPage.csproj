@@ -44,6 +44,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.2.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.2.1\lib\net45\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Mvc5.4.0.0\lib\net451\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -97,16 +105,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Spring.Core, Version=2.0.1.45000, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
-      <HintPath>..\packages\Spring.Core.2.0.1\lib\net45\Spring.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Spring.Web, Version=2.0.1.45000, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
-      <HintPath>..\packages\Spring.Web.2.0.1\lib\net45\Spring.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Spring.Web.Mvc5, Version=2.0.1.45000, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
-      <HintPath>..\packages\Spring.Web.Mvc5.2.0.1\lib\net45\Spring.Web.Mvc5.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -185,9 +185,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -240,6 +237,9 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Areas\BnsManage\BnsManageAreaRegistration.cs" />
+    <Compile Include="Areas\BnsManage\Controllers\CustomerController.cs" />
+    <Compile Include="Areas\BnsManage\Controllers\OrderController.cs" />
     <Compile Include="Areas\ComManage\ComManageAreaRegistration.cs" />
     <Compile Include="Areas\ComManage\Controllers\BackupRestoreController.cs" />
     <Compile Include="Areas\ComManage\Controllers\UploadController.cs" />
@@ -247,6 +247,7 @@
     <Compile Include="Areas\ComManage\Models\FileModel.cs" />
     <Compile Include="Areas\ComManage\Models\Thumbnail.cs" />
     <Compile Include="Areas\ComManage\Models\WaterMark.cs" />
+    <Compile Include="Areas\FinaManage\Controllers\StatementController.cs" />
     <Compile Include="Areas\FinaManage\FinaManageAreaRegistration.cs" />
     <Compile Include="Areas\MailManage\Controllers\MailController.cs" />
     <Compile Include="Areas\MailManage\MailManageAreaRegistration.cs" />
@@ -260,9 +261,6 @@
     <Compile Include="Areas\ProManage\Controllers\ProjectTeamsController.cs" />
     <Compile Include="Areas\ProManage\Models\UserStageRank.cs" />
     <Compile Include="Areas\ProManage\ProManageAreaRegistration.cs" />
-    <Compile Include="Areas\SaleManage\Controllers\CustomerController.cs" />
-    <Compile Include="Areas\SaleManage\Controllers\OrderController.cs" />
-    <Compile Include="Areas\SaleManage\SaleManageAreaRegistration.cs" />
     <Compile Include="Areas\SysManage\Controllers\AccountController.cs" />
     <Compile Include="Areas\SysManage\Controllers\BussinessCustomerController.cs" />
     <Compile Include="Areas\SysManage\Controllers\ChatController.cs" />
@@ -292,14 +290,7 @@
     <Compile Include="upload\controller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Config\ComControllers.xml" />
-    <EmbeddedResource Include="Config\Controllers.xml" />
-    <EmbeddedResource Include="Config\IndexControllers.xml" />
-    <EmbeddedResource Include="Config\MailControllers.xml" />
-    <EmbeddedResource Include="Config\ProControllers.xml" />
-    <EmbeddedResource Include="Config\SaleControllers.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Content Include="Config\WebSite.config" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\admin\skins\all.css" />
@@ -430,6 +421,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\images\admin\close.png" />
     <Content Include="Content\images\admin\header-profile.png" />
+    <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\chat\dialog_m.png" />
     <Content Include="Content\images\chat\dialog_p.png" />
     <Content Include="Content\images\chat\dialog_s.png" />
@@ -513,7 +505,6 @@
     <Content Include="Content\images\selected-icon.png" />
     <Content Include="Content\images\watermark.png" />
     <Content Include="Content\js\admin\common.js" />
-    <Content Include="Content\js\admin\Common_Part.js" />
     <Content Include="Content\js\admin\datatables\colResizable-1.5.min.js" />
     <Content Include="Content\js\admin\datatables\dataTables.bootstrap.js" />
     <Content Include="Content\js\admin\datatables\jquery.dataTables.js" />
@@ -547,6 +538,15 @@
     <Content Include="Content\js\laydate\skins\default\laydate.css" />
     <Content Include="Content\js\laydate\skins\molv\icon.png" />
     <Content Include="Content\js\laydate\skins\molv\laydate.css" />
+    <Content Include="Content\js\layer\layer.js" />
+    <Content Include="Content\js\layer\mobile\layer.js" />
+    <Content Include="Content\js\layer\mobile\need\layer.css" />
+    <Content Include="Content\js\layer\skin\default\icon-ext.png" />
+    <Content Include="Content\js\layer\skin\default\icon.png" />
+    <Content Include="Content\js\layer\skin\default\layer.css" />
+    <Content Include="Content\js\layer\skin\default\loading-0.gif" />
+    <Content Include="Content\js\layer\skin\default\loading-1.gif" />
+    <Content Include="Content\js\layer\skin\default\loading-2.gif" />
     <Content Include="Content\js\login\jquery-ui.min.js" />
     <Content Include="Content\js\login\login.min.js" />
     <Content Include="Content\js\login\sketch.min.js" />
@@ -930,12 +930,10 @@
     <Content Include="Areas\SysManage\Views\Home\Index.cshtml" />
     <Content Include="Areas\SysManage\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\SysManage\Views\_ViewStart.cshtml" />
-    <Content Include="Config\WebSite.config" />
-    <Content Include="Areas\SaleManage\Views\web.config" />
     <Content Include="Areas\FinaManage\Views\web.config" />
-    <Content Include="Areas\SaleManage\Views\Customer\Index.cshtml" />
-    <Content Include="Areas\SysManage\Views\BussinessCustomer\DataSource.cshtml" />
-    <Content Include="Areas\SaleManage\Views\Customer\DataView.cshtml" />
+    <Content Include="Areas\BnsManage\Views\web.config" />
+    <Content Include="Areas\BnsManage\Views\Customer\Index.cshtml" />
+    <Content Include="Areas\BnsManage\Views\Customer\DataView.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -973,13 +971,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\BnsManage\Models\" />
+    <Folder Include="Areas\BnsManage\Views\Shared\" />
     <Folder Include="Areas\ComManage\Views\Shared\" />
-    <Folder Include="Areas\FinaManage\Controllers\" />
     <Folder Include="Areas\FinaManage\Models\" />
     <Folder Include="Areas\FinaManage\Views\Shared\" />
-    <Folder Include="Areas\SaleManage\Models\" />
-    <Folder Include="Areas\SaleManage\Views\Order\" />
-    <Folder Include="Areas\SaleManage\Views\Shared\" />
+    <Folder Include="Areas\FinaManage\Views\Statement\" />
     <Folder Include="Areas\SysManage\Models\" />
     <Folder Include="Areas\SysManage\Views\CodeArea\" />
   </ItemGroup>
@@ -1040,6 +1037,9 @@
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>"$(SolutionDir)PublicAnonymous\bin\Debug\PublicAnonymous.exe" "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

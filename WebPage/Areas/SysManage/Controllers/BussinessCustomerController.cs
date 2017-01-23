@@ -1,10 +1,7 @@
 ﻿using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Transactions;
 using System.Web.Mvc;
 using WebPage.Controllers;
@@ -18,23 +15,34 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 公司客户管理
         /// </summary>
-        IBussinessCustomerManage BussinessCustomerManage { get; set; }
+        IBussinessCustomerManage BussinessCustomerManage;
         /// <summary>
         /// 省市区管理
         /// </summary>
-        ICodeAreaManage CodeAreaManage { get; set; }
+        ICodeAreaManage CodeAreaManage;
         /// <summary>
         /// 大数据字段管理
         /// </summary>
-        IContentManage ContentManage { get; set; }
+        IContentManage ContentManage;
         /// <summary>
         /// 编码管理
         /// </summary>
-        ICodeManage CodeManage { get; set; }
+        ICodeManage CodeManage;
+
+        public BussinessCustomerController
+            (
+                IBussinessCustomerManage BussinessCustomerManage,
+                ICodeAreaManage CodeAreaManage,
+                IContentManage ContentManage,
+                ICodeManage CodeManage
+            )
+        {
+            this.BussinessCustomerManage = BussinessCustomerManage;
+            this.CodeAreaManage = CodeAreaManage;
+            this.ContentManage = ContentManage;
+            this.CodeManage = CodeManage;
+        }
         #endregion
-
-
-
         /// <summary>
         /// 客户管理加载主页
         /// </summary>
@@ -68,25 +76,6 @@ namespace WebPage.Areas.SysManage.Controllers
                 throw e.InnerException;
             }
         }
-
-        public ActionResult DataSource()
-        {
-            string Province = Request.QueryString["Province"];
-            ViewData["Province"] = Province;
-            //接收客户类型
-            string CustomerStyle = Request.QueryString["CustomerStyle"];
-            ViewData["CustomerStyle"] = CustomerStyle;
-            //文本框输入查询关键字
-            ViewBag.Search = base.keywords;
-
-
-            ViewData["ProvinceList"] = CodeAreaManage.LoadListAll(p => p.LEVELS == 1);
-            ViewBag.KHLX = this.CodeManage.LoadAll(p => p.CODETYPE == "LXRLX").OrderBy(p => p.SHOWORDER).ToList();
-
-            //输出客户分页列表
-            return PartialView(BindList(Province, CustomerStyle));
-        }
-
         #region 帮助方法及其他控制器调用
         /// <summary>
         /// 分页查询公司客户列表
@@ -124,7 +113,7 @@ namespace WebPage.Areas.SysManage.Controllers
             //排序
             query = query.OrderByDescending(p => p.UpdateDate).OrderByDescending(p => p.ID);
             //分页
-            var result = this.BussinessCustomerManage.Query(query, page, pagesize);
+            var result = this.BussinessCustomerManage.Query(query, pageindex, pagesize);
 
             var list = result.List.Select(p => new
             {
@@ -133,7 +122,7 @@ namespace WebPage.Areas.SysManage.Controllers
                 p.IsValidate,
                 CompanyProvince = this.CodeAreaManage.Get(m => m.ID == p.CompanyProvince)?.NAME,
                 CompanyCity = this.CodeAreaManage.Get(m => m.ID == p.CompanyCity)?.NAME,
-                CompanyArea = CodeAreaManage.Get(m => m.ID == p.CompanyArea)?.NAME,
+                CompanyArea = this.CodeAreaManage.Get(m => m.ID == p.CompanyArea)?.NAME,
                 p.CompanyTel,
                 p.ChargePersionName,
                 p.CreateUser,

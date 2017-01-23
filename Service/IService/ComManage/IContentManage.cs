@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain;
+﻿using Domain;
 
 namespace Service.IService
 {
-    public interface IContentManage : IRepository<COM_CONTENT>
+    public interface IContentManage : IRepository<COM_CONTENT>, IAutofac
     {
     }
 }

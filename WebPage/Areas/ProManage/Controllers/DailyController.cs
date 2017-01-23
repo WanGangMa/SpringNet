@@ -10,16 +10,16 @@ namespace WebPage.Areas.ProManage.Controllers
 {
     public class DailyController : BaseController
     {
-        private IDailyManage DailyManage
+        IDailyManage DailyManage;
+        IContentManage ContentManage;
+        public DailyController
+            (
+                IDailyManage DailyManage,
+                IContentManage ContentManage
+            )
         {
-            get;
-            set;
-        }
-
-        private IContentManage ContentManage
-        {
-            get;
-            set;
+            this.DailyManage = DailyManage;
+            this.ContentManage = ContentManage;
         }
 
         [UserAuthorize(ModuleAlias = "Daily", OperaAction = "View")]

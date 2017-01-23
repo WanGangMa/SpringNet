@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Service.IService
+﻿namespace Service.IService
 {
     /// <summary>
     /// Service层用户与角色关系接口
     ///  2016-05-19
     /// </summary>
-    public interface IUserRoleManage : IRepository<Domain.SYS_USER_ROLE>
+    public interface IUserRoleManage : IRepository<Domain.SYS_USER_ROLE>, IAutofac
     {
         /// <summary>
         /// 设置用户角色

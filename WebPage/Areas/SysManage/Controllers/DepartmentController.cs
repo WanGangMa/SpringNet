@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using Service.IService;
@@ -11,17 +9,23 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class DepartmentController : BaseController
     {
-        IDepartmentManage DepartmentManage { get; set; }
+        IDepartmentManage DepartmentManage;
 
         /// <summary>
         /// 岗位管理
         /// </summary>
-        IPostManage PostManage { get; set; }
+        IPostManage PostManage;
+
+        public DepartmentController(IDepartmentManage DepartmentManage, IPostManage PostManage)
+        {
+            this.DepartmentManage = DepartmentManage;
+            this.PostManage = PostManage;
+        }
 
         /// <summary>
         /// 加载主页
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Department", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Department", OperaAction = "View")]
         public ActionResult Index()
         {
             try
@@ -39,7 +43,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 加载详情页
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Department", OperaAction = "Detail")]
+        [UserAuthorize(ModuleAlias = "Department", OperaAction = "Detail")]
         public ActionResult Detail(string id)
         {
             try
@@ -73,18 +77,45 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 保存部门
         /// </summary>
         [ValidateInput(false)]
-        [UserAuthorizeAttribute(ModuleAlias = "Department", OperaAction = "Add,Edit")]
+        [UserAuthorize(ModuleAlias = "Department", OperaAction = "Add,Edit")]
         public ActionResult Save(Domain.SYS_DEPARTMENT entity)
         {
-            bool isEdit = false;
+            bool isAdd = true;
             var json = new JsonHelper() { Msg = "保存成功", Status = "n" };
             try
             {
                 var _entity = new Domain.SYS_DEPARTMENT();
                 if (entity != null)
                 {
-                    if (!string.IsNullOrEmpty(entity.ID))
+                    if (string.IsNullOrEmpty(entity.ID))
                     {
+                        #region 添加
+                        _entity = entity;
+                        _entity.ID = Guid.NewGuid().ToString();
+                        _entity.CREATEDATE = DateTime.Now;
+                        _entity.CREATEPERID = this.CurrentUser.Name;
+                        _entity.UPDATEDATE = DateTime.Now;
+                        _entity.UPDATEUSER = this.CurrentUser.Name;
+                        //根据上级部门的ID确定当前部门的CODE
+                        _entity.CODE = this.DepartmentManage.CreateCode(entity.PARENTID);
+                        //获取父级记录
+                        if (string.IsNullOrEmpty(entity.PARENTID))
+                        {
+                            //业务等级
+                            entity.BUSINESSLEVEL = 1;
+                            entity.PARENTCODE = null;
+                        }
+                        else
+                        {
+                            var parententity = this.DepartmentManage.Get(p => p.ID == entity.PARENTID);
+                            entity.BUSINESSLEVEL = parententity.BUSINESSLEVEL + 1;
+                            entity.PARENTCODE = parententity.CODE;
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                       
                         #region 修改
                         _entity = this.DepartmentManage.Get(p => p.ID == entity.ID);
                         entity.CREATEDATE = _entity.CREATEDATE;
@@ -113,34 +144,8 @@ namespace WebPage.Areas.SysManage.Controllers
                             entity.PARENTCODE = parententity.CODE;
                         }
                         #endregion
-                        isEdit = true;
+                        isAdd = false;
                         _entity = entity;
-                    }
-                    else
-                    {
-                        #region 添加
-                        _entity = entity;
-                        _entity.ID = Guid.NewGuid().ToString();
-                        _entity.CREATEDATE = DateTime.Now;
-                        _entity.CREATEPERID = this.CurrentUser.Name;
-                        _entity.UPDATEDATE = DateTime.Now;
-                        _entity.UPDATEUSER = this.CurrentUser.Name;
-                        //根据上级部门的ID确定当前部门的CODE
-                        _entity.CODE = this.DepartmentManage.CreateCode(entity.PARENTID);
-                        //获取父级记录
-                        if (string.IsNullOrEmpty(entity.PARENTID))
-                        {
-                            //业务等级
-                            entity.BUSINESSLEVEL = 1;
-                            entity.PARENTCODE = null;
-                        }
-                        else
-                        {
-                            var parententity = this.DepartmentManage.Get(p => p.ID == entity.PARENTID);
-                            entity.BUSINESSLEVEL = parententity.BUSINESSLEVEL + 1;
-                            entity.PARENTCODE = parententity.CODE;
-                        }
-                        #endregion
                     }
                     //判断同一个部门下，是否重名 
                     var predicate = PredicateBuilder.True<Domain.SYS_DEPARTMENT>();
@@ -149,7 +154,7 @@ namespace WebPage.Areas.SysManage.Controllers
                     predicate = predicate.And(p => p.ID != _entity.ID);
                     if (!this.DepartmentManage.IsExist(predicate))
                     {
-                        if (this.DepartmentManage.SaveOrUpdate(_entity, isEdit))
+                        if (this.DepartmentManage.SaveOrUpdate(_entity, isAdd))
                         {
                             json.Status = "y";
                         }
@@ -167,7 +172,7 @@ namespace WebPage.Areas.SysManage.Controllers
                 {
                     json.Msg = "未找到需要保存的部门信息";
                 }
-                if (isEdit)
+                if (isAdd)
                 {
                     WriteLog(enumOperator.Edit, "修改部门信息，结果：" + json.Msg, enumLog4net.INFO);
                 }
@@ -189,7 +194,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 删除部门
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Department", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "Department", OperaAction = "Remove")]
         public ActionResult Delete(string idList)
         {
             JsonHelper json = new JsonHelper() { Msg = "删除部门成功", ReUrl = "/Department/Index", Status = "n" };

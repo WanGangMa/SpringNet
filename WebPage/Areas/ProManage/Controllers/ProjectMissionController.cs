@@ -1,11 +1,9 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Web.Mvc;
 using WebPage.Controllers;
 
@@ -163,7 +161,7 @@ namespace WebPage.Areas.ProManage.Controllers
                         orderby p.JionStatus descending
                         orderby p.PRO_PROJECT_STAGES.EndDate
                         select p;
-            PageInfo<PRO_PROJECT_TEAMS> pageInfo = this.ProjectTeamManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<PRO_PROJECT_TEAMS> pageInfo = this.ProjectTeamManage.Query(queryable, base.pageindex, base.pagesize);
             var obj = (from p in pageInfo.List
                        select new
                        {

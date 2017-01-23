@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Common;
 using Service.IService;
 using WebPage.Controllers;
@@ -11,10 +7,10 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class CodeAreaController : BaseController
     {
-        private ICodeAreaManage CodeAreaManage
+        ICodeAreaManage CodeAreaManage;
+        public CodeAreaController(ICodeAreaManage CodeAreaManage)
         {
-            get;
-            set;
+            this.CodeAreaManage = CodeAreaManage;
         }
 
         public ActionResult Prov()

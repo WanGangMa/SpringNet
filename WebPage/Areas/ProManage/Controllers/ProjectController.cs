@@ -1,12 +1,10 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Transactions;
 using System.Web.Mvc;
 using WebPage.Controllers;
@@ -349,7 +347,7 @@ private PageInfo BindList(string ProjectType)
     queryable = from p in queryable
                 orderby p.ProjectLevels, p.EndDate
                 select p;
-    PageInfo<PRO_PROJECTS> pageInfo = this.ProjectManage.Query(queryable, base.page, base.pagesize);
+    PageInfo<PRO_PROJECTS> pageInfo = this.ProjectManage.Query(queryable, base.pageindex, base.pagesize);
     var obj = pageInfo.List.Select(delegate (PRO_PROJECTS p)
     {
         return new

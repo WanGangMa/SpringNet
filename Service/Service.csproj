@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.2.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.2.1\lib\net45\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -68,35 +72,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
-    <Compile Include="CommonHelper.cs" />
-    <Compile Include="CommonHtmlHelper.cs" />
-    <Compile Include="DatabaseExtensions.cs" />
+    <Compile Include="Extensions\Account.cs" />
+    <Compile Include="Extensions\CommonHelper.cs" />
+    <Compile Include="Extensions\CommonHtmlHelper.cs" />
+    <Compile Include="Extensions\DatabaseExtensions.cs" />
+    <Compile Include="Extensions\IAutofac.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="IService\ComManage\IContentManage.cs" />
     <Compile Include="IService\ComManage\IUploadManage.cs" />
-    <Compile Include="IService\SaleManage\ICustomerManage.cs" />
-    <Compile Include="IService\SaleManage\IOrderManage.cs" />
+    <Compile Include="IService\BnsManage\ICustomerManage.cs" />
+    <Compile Include="IService\BnsManage\IOrderManage.cs" />
     <Compile Include="IService\SysManage\IBussinessCustomerManage.cs" />
     <Compile Include="IService\SysManage\IChatMessageManage.cs" />
     <Compile Include="IService\SysManage\ICodeAreaManage.cs" />
     <Compile Include="IService\SysManage\ICodeManage.cs" />
     <Compile Include="IService\SysManage\IDailyManage.cs" />
     <Compile Include="IService\SysManage\IDepartmentManage.cs" />
-    <Compile Include="IService\SysManage\IDictionaryManage.cs" />
-    <Compile Include="IService\SysManage\IMailAttachmentMange.cs" />
-    <Compile Include="IService\SysManage\IMailinManage.cs" />
-    <Compile Include="IService\SysManage\IMailOutManage.cs" />
+    <Compile Include="IService\MailManage\IMailAttachmentMange.cs" />
+    <Compile Include="IService\MailManage\IMailinManage.cs" />
+    <Compile Include="IService\MailManage\IMailOutManage.cs" />
     <Compile Include="IService\SysManage\IModuleManage.cs" />
     <Compile Include="IService\SysManage\IPermissionManage.cs" />
     <Compile Include="IService\SysManage\IPlaceInfoManage.cs" />
     <Compile Include="IService\SysManage\IPostManage.cs" />
     <Compile Include="IService\SysManage\IPostUserManage.cs" />
-    <Compile Include="IService\SysManage\IProjectFilesManage.cs" />
-    <Compile Include="IService\SysManage\IProjectManage.cs" />
-    <Compile Include="IService\SysManage\IProjectMessage.cs" />
-    <Compile Include="IService\SysManage\IProjectStageManage.cs" />
-    <Compile Include="IService\SysManage\IProjectTeamManage.cs" />
+    <Compile Include="IService\ProManage\IProjectFilesManage.cs" />
+    <Compile Include="IService\ProManage\IProjectManage.cs" />
+    <Compile Include="IService\ProManage\IProjectMessage.cs" />
+    <Compile Include="IService\ProManage\IProjectStageManage.cs" />
+    <Compile Include="IService\ProManage\IProjectTeamManage.cs" />
     <Compile Include="IService\SysManage\IRoleManage.cs" />
     <Compile Include="IService\SysManage\IRolePermissionManage.cs" />
     <Compile Include="IService\SysManage\ISyslogManage.cs" />
@@ -113,28 +117,27 @@
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="ServiceImp\ComManage\ContentManage.cs" />
     <Compile Include="ServiceImp\ComManage\UploadManage.cs" />
-    <Compile Include="ServiceImp\SaleManage\CustomerManage.cs" />
-    <Compile Include="ServiceImp\SaleManage\OrderManage.cs" />
+    <Compile Include="ServiceImp\BnsManage\CustomerManage.cs" />
+    <Compile Include="ServiceImp\BnsManage\OrderManage.cs" />
     <Compile Include="ServiceImp\SysManage\BussinessCustomerManage.cs" />
     <Compile Include="ServiceImp\SysManage\ChatMessageManage.cs" />
     <Compile Include="ServiceImp\SysManage\CodeAreaManage.cs" />
     <Compile Include="ServiceImp\SysManage\CodeManage.cs" />
     <Compile Include="ServiceImp\SysManage\DailyManage.cs" />
     <Compile Include="ServiceImp\SysManage\DepartmentManage.cs" />
-    <Compile Include="ServiceImp\SysManage\DictionaryManage.cs" />
-    <Compile Include="ServiceImp\SysManage\MailAttachmentManage.cs" />
-    <Compile Include="ServiceImp\SysManage\MailinManage.cs" />
-    <Compile Include="ServiceImp\SysManage\MailOutManage.cs" />
+    <Compile Include="ServiceImp\MailManage\MailAttachmentManage.cs" />
+    <Compile Include="ServiceImp\MailManage\MailinManage.cs" />
+    <Compile Include="ServiceImp\MailManage\MailOutManage.cs" />
     <Compile Include="ServiceImp\SysManage\ModuleManage.cs" />
     <Compile Include="ServiceImp\SysManage\PermissionManage.cs" />
     <Compile Include="ServiceImp\SysManage\PlaceInfoManage.cs" />
     <Compile Include="ServiceImp\SysManage\PostManage.cs" />
     <Compile Include="ServiceImp\SysManage\PostUserManage.cs" />
-    <Compile Include="ServiceImp\SysManage\ProjectFilesManage.cs" />
-    <Compile Include="ServiceImp\SysManage\ProjectManage.cs" />
-    <Compile Include="ServiceImp\SysManage\ProjectMessage.cs" />
-    <Compile Include="ServiceImp\SysManage\ProjectStageManage.cs" />
-    <Compile Include="ServiceImp\SysManage\ProjectTeamManage.cs" />
+    <Compile Include="ServiceImp\ProManage\ProjectFilesManage.cs" />
+    <Compile Include="ServiceImp\ProManage\ProjectManage.cs" />
+    <Compile Include="ServiceImp\ProManage\ProjectMessage.cs" />
+    <Compile Include="ServiceImp\ProManage\ProjectStageManage.cs" />
+    <Compile Include="ServiceImp\ProManage\ProjectTeamManage.cs" />
     <Compile Include="ServiceImp\SysManage\RoleManage.cs" />
     <Compile Include="ServiceImp\SysManage\RolePermissionManage.cs" />
     <Compile Include="ServiceImp\SysManage\SyslogManage.cs" />
@@ -163,19 +166,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Config\MailService.xml" />
-    <EmbeddedResource Include="Config\ProService.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Config\ComService.xml" />
-    <EmbeddedResource Include="Config\Service.xml" />
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="Config\" />
     <Folder Include="IService\FinaManage\" />
     <Folder Include="ServiceImp\FinaManage\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Config\SaleService.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

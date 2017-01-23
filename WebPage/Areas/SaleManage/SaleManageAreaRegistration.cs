@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace WebPage.Areas.SaleManage
+namespace WebPage.Areas.BnsManage
 {
     public class SaleManageAreaRegistration : AreaRegistration 
     {

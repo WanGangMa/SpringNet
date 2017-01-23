@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Service.IService
 {
@@ -9,7 +6,7 @@ namespace Service.IService
     /// 用户部门关系业务接口
     ///  2016-05-19
     /// </summary>
-    public interface IUserDepartmentManage : IRepository<Domain.SYS_USER_DEPARTMENT>
+    public interface IUserDepartmentManage : IRepository<Domain.SYS_USER_DEPARTMENT>, IAutofac
     {
         /// <summary>
         /// 根据部门ID获取当前部门的所有用户集合

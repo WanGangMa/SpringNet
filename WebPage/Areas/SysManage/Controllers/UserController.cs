@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using Service.IService;
@@ -13,65 +12,43 @@ namespace WebPage.Areas.SysManage.Controllers
     public class UserController : BaseController
     {
 
-        private IDepartmentManage DepartmentManage
+        IDepartmentManage DepartmentManage;
+        IPostManage PostManage;
+        IPostUserManage PostUserManage;
+        IUserInfoManage UserInfoManage;
+        ICodeManage CodeManage;
+        IRoleManage RoleManage;
+        IDailyManage DailyManage;
+        IContentManage ContentManage;
+        IWorkAttendanceManage WorkAttendanceManage;
+        public UserController
+            (
+                IDepartmentManage DepartmentManage,
+                IPostManage PostManage,
+                IPostUserManage PostUserManage,
+                IUserInfoManage UserInfoManage,
+                ICodeManage CodeManage,
+                IRoleManage RoleManage,
+                IDailyManage DailyManage,
+                IContentManage ContentManage,
+                IWorkAttendanceManage WorkAttendanceManage
+            )
         {
-            get;
-            set;
+            this.DepartmentManage = DepartmentManage;
+            this.PostManage = PostManage;
+            this.PostUserManage = PostUserManage;
+            this.UserInfoManage = UserInfoManage;
+            this.CodeManage = CodeManage;
+            this.RoleManage = RoleManage;
+            this.DailyManage = DailyManage;
+            this.ContentManage = ContentManage;
+            this.WorkAttendanceManage = WorkAttendanceManage;
         }
-
-        private IPostManage PostManage
-        {
-            get;
-            set;
-        }
-
-        private IPostUserManage PostUserManage
-        {
-            get;
-            set;
-        }
-
-        private IUserInfoManage UserInfoManage
-        {
-            get;
-            set;
-        }
-
-        private ICodeManage CodeManage
-        {
-            get;
-            set;
-        }
-
-        private IRoleManage RoleManage
-        {
-            get;
-            set;
-        }
-
-        private IDailyManage DailyManage
-        {
-            get;
-            set;
-        }
-
-        private IContentManage ContentManage
-        {
-            get;
-            set;
-        }
-
-        private IWorkAttendanceManage WorkAttendanceManage
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// 加载首页
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "View")]
         public ActionResult Index()
         {
             try
@@ -102,12 +79,12 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 加载用户详情信息（基本）
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "Detail")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "Detail")]
         public ActionResult Detail(int? id)
         {
             try
             {
-                var _entity = new Domain.SYS_USER();
+                var _entity = new SYS_USER();
 
                 var Postlist = "";
 
@@ -133,8 +110,8 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 保存人员基本信息
         /// </summary>
         [ValidateInput(false)]
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "Add,Edit")]
-        public ActionResult Save(Domain.SYS_USER entity)
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "Add,Edit")]
+        public ActionResult Save(SYS_USER entity)
         {
             bool isAdd = true;
             var json = new JsonHelper() { Msg = "保存成功", Status = "n" };
@@ -149,41 +126,47 @@ namespace WebPage.Areas.SysManage.Controllers
                         entity.UPDATEDATE = DateTime.Now;
                         entity.UPDATEUSER = this.CurrentUser.Name;
                         entity.PASSWORD = new AESCrypt().Encrypt("111111");
-                        entity.PINYIN1 = Common.ConvertHzToPz.Convert(entity.NAME).ToLower();
-                        entity.PINYIN2 = Common.ConvertHzToPz.ConvertFirst(entity.NAME).ToLower();
+                        entity.PINYIN1 = ConvertHzToPz.Convert(entity.NAME).ToLower();
+                        entity.PINYIN2 = ConvertHzToPz.ConvertFirst(entity.NAME).ToLower();
                     }
                     else //修改
                     {
                         entity.UPDATEUSER = this.CurrentUser.Name;
                         entity.UPDATEDATE = DateTime.Now;
-                        entity.PINYIN1 = Common.ConvertHzToPz.Convert(entity.NAME).ToLower();
-                        entity.PINYIN2 = Common.ConvertHzToPz.ConvertFirst(entity.NAME).ToLower();
+                        entity.PINYIN1 = ConvertHzToPz.Convert(entity.NAME).ToLower();
+                        entity.PINYIN2 = ConvertHzToPz.ConvertFirst(entity.NAME).ToLower();
                         isAdd = false;
                     }
                     //检测此用户名是否重复
                     if (!this.UserManage.IsExist(p => p.ACCOUNT.Equals(entity.ACCOUNT) && p.ID != entity.ID))
                     {
-                        if (this.UserManage.SaveOrUpdate(entity, isAdd))
+                        UserManage.SaveOrUpdate(entity, isAdd, false);
+                        //员工岗位
+                        var postlist = Request.Form["postlist"];
+                        if (!string.IsNullOrEmpty(postlist))
                         {
-                            //员工岗位
-                            var postlist = Request.Form["postlist"];
-                            if (!string.IsNullOrEmpty(postlist))
+                            //删除员工岗位
+                            if (PostUserManage.IsExist(p => p.FK_USERID == entity.ID))
                             {
-                                //删除员工岗位
-                                if (PostUserManage.IsExist(p => p.FK_USERID == entity.ID))
-                                {
-                                    PostUserManage.Delete(p => p.FK_USERID == entity.ID);
-                                }
-                                //添加新的员工岗位
-                                List<Domain.SYS_POST_USER> PostUser = new List<Domain.SYS_POST_USER>();
-                                foreach (var item in postlist.Trim(',').Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(p => p).ToList())
-                                {
-                                    PostUser.Add(new Domain.SYS_POST_USER() { FK_POSTID = item, FK_USERID = entity.ID });
-                                }
-                                PostUserManage.SaveList(PostUser);
+                                PostUserManage.Delete(p => p.FK_USERID == entity.ID, false);
                             }
+                            //添加新的员工岗位
+                            List<Domain.SYS_POST_USER> PostUser = new List<Domain.SYS_POST_USER>();
+                            foreach (var item in postlist.Trim(',').Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(p => p).ToList())
+                            {
+                                PostUser.Add(new Domain.SYS_POST_USER() { FK_POSTID = item, FK_USERID = entity.ID });
+                            }
+                            PostUserManage.SaveList(PostUser, false);
                         }
-                        json.Status = "y";
+                        if (base.uow.Commit())
+                        {
+                            json.Status = "y";
+                        }
+                        else
+                        {
+                            json.Msg = "更新資料庫時發生錯誤!";
+                        }
+                        base.uow.Dispose();
                     }
                     else
                     {
@@ -224,7 +207,7 @@ namespace WebPage.Areas.SysManage.Controllers
         ///           5、删除用户部门关系
         ///           6、删除用户
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "Remove")]
         public ActionResult Delete(string idList)
         {
             var json = new JsonHelper() { Status = "n", Msg = "删除用户成功" };
@@ -282,7 +265,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <param name="Id">用户编号</param>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "PwdReset")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "PwdReset")]
         public ActionResult ResetPwd(string idList)
         {
             var json = new JsonHelper() { Status = "n", Msg = "操作成功" };
@@ -321,7 +304,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "UserInfo")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "UserInfo")]
         public ActionResult UserInfo(int? userid)
         {
             try
@@ -622,7 +605,7 @@ namespace WebPage.Areas.SysManage.Controllers
             //排序
             query = query.OrderBy(p => p.SHOWORDER1).OrderByDescending(p => p.CREATEDATE);
             //分页
-            var result = this.UserManage.Query(query, page, pagesize);
+            var result = this.UserManage.Query(query, pageindex, pagesize);
 
             var list = result.List.Select(p => new
             {

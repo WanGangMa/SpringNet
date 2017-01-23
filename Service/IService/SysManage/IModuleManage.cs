@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Service.IService
 {
@@ -9,7 +6,7 @@ namespace Service.IService
     /// Service模型处理接口
     ///  2015-05-22
     /// </summary>
-    public interface IModuleManage : IRepository<Domain.SYS_MODULE>
+    public interface IModuleManage : IRepository<Domain.SYS_MODULE>, IAutofac
     {
         /// <summary>
         /// 获取用户权限模块集合

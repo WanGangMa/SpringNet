@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Service.IService
 {
@@ -9,7 +6,7 @@ namespace Service.IService
     /// Service 授权验证模块对应接口
     ///  2016-05-19
     /// </summary>
-    public interface IPermissionManage : IRepository<Domain.SYS_PERMISSION>
+    public interface IPermissionManage : IRepository<Domain.SYS_PERMISSION>, IAutofac
     {
         /// <summary>
         /// 根据系统ID获取所有模块的权限ID集合

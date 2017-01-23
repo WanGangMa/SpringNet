@@ -1,11 +1,9 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Transactions;
 using System.Web.Mvc;
 using WebPage.Controllers;
@@ -14,31 +12,24 @@ namespace WebPage.Areas.MailManage.Controllers
 {
     public class MailController : BaseController
     {
+        IMailoutManage MailoutManage;
+        IMailinManage MailinManage;
+        IContentManage ContentManage;
+        IDepartmentManage DepartmentManage;
 
-
-        private IMailoutManage MailoutManage
+        public MailController
+            (
+                IMailoutManage MailoutManage,
+                IMailinManage MailinManage,
+                IContentManage ContentManage,
+                IDepartmentManage DepartmentManage
+            )
         {
-            get;
-            set;
-        }
-
-        private IMailinManage MailinManage
-        {
-            get;
-            set;
-        }
-
-        private IContentManage ContentManage
-        {
-            get;
-            set;
-        }
-
-        private IDepartmentManage DepartmentManage
-        {
-            get;
-            set;
-        }
+            this.MailoutManage = MailoutManage;
+            this.MailinManage = MailinManage;
+            this.ContentManage = ContentManage;
+            this.DepartmentManage = DepartmentManage;
+        }      
 
         [UserAuthorize(ModuleAlias = "Mail", OperaAction = "View")]
         public ActionResult Index()
@@ -426,7 +417,7 @@ namespace WebPage.Areas.MailManage.Controllers
             queryable = from p in queryable
                         orderby p.SendDate descending
                         select p;
-            PageInfo<MAIL_OUTBOX> pageInfo = this.MailoutManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<MAIL_OUTBOX> pageInfo = this.MailoutManage.Query(queryable, base.pageindex, base.pagesize);
             var list = (from p in pageInfo.List
                         select new
                         {
@@ -456,7 +447,7 @@ namespace WebPage.Areas.MailManage.Controllers
             queryable = from p in queryable
                         orderby p.ReceivingTime descending
                         select p;
-            PageInfo<MAIL_INBOX> pageInfo = this.MailinManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<MAIL_INBOX> pageInfo = this.MailinManage.Query(queryable, base.pageindex, base.pagesize);
             var list = pageInfo.List.Select(delegate (MAIL_INBOX p)
             {
                 return new
@@ -496,7 +487,7 @@ namespace WebPage.Areas.MailManage.Controllers
             queryable = from p in queryable
                         orderby p.ReceivingTime descending
                         select p;
-            PageInfo<MAIL_INBOX> pageInfo = this.MailinManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<MAIL_INBOX> pageInfo = this.MailinManage.Query(queryable, base.pageindex, base.pagesize);
             var list = pageInfo.List.Select(delegate (MAIL_INBOX p)
             {
                 return new

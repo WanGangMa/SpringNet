@@ -1,11 +1,9 @@
 ﻿using Common;
 using Domain;
-using Microsoft.CSharp.RuntimeBinder;
 using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Transactions;
 using System.Web.Mvc;
 using WebPage.Controllers;
@@ -287,7 +285,7 @@ namespace WebPage.Areas.ProManage.Controllers
             queryable = from p in queryable
                         orderby p.OrderNumber
                         select p;
-            PageInfo<PRO_PROJECT_STAGES> pageInfo = this.ProjectStageManage.Query(queryable, base.page, base.pagesize);
+            PageInfo<PRO_PROJECT_STAGES> pageInfo = this.ProjectStageManage.Query(queryable, base.pageindex, base.pagesize);
             var obj = pageInfo.List.Select(delegate (PRO_PROJECT_STAGES p)
             {
                 int arg_9B_0 = p.ID;

@@ -4,8 +4,8 @@
     <div class="col-sm-6">
         <div class="dataTables_info">
             显示 @Model.BeginPage 到 @Model.EndPage 项，共 @Model.Count 项, 每页显示
-            <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="$('#form1').submit()">
-                <option value="3" @(Model.PageSize == 3 ? "selected" : "")>3</option>
+            <select name="example_length" class="form-control input-sm input-xs-sm inline" onchange="$('#form').submit()">
+                <option value="10" @(Model.PageSize == 10 ? "selected" : "")>10</option>
                 <option value="25" @(Model.PageSize == 25 ? "selected" : "")>25</option>
                 <option value="50" @(Model.PageSize == 50 ? "selected" : "")>50</option>
                 <option value="100" @(Model.PageSize == 100 ? "selected" : "")>100</option>
@@ -67,7 +67,6 @@
                 }
                 <div class="dataTables_paginate paging_full_numbers" style="padding-top: 0px;" id="example_paginate">
                     <ul class="pagination" style="margin-top:0px">
-                       
                         @if (PageIndex > 1)
                         {
                             <li class="paginate_button previous" id="example_first">
@@ -75,6 +74,7 @@
                            {
                                UpdateTargetId = "targetDiv",
                                HttpMethod = "Get",
+                               LoadingElementId = "ajax-loader",
                                InsertionMode = InsertionMode.Replace,
                                Url = (Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", "1") : (Url + "page=1")
                            }, new { aria_controls = "example", data_dt_idx = "1", tabindex = "0" })
@@ -93,6 +93,7 @@
                            {
                                UpdateTargetId = "targetDiv",
                                HttpMethod = "Get",
+                               LoadingElementId = "ajax-loader",
                                InsertionMode = InsertionMode.Replace,
                                Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
 
@@ -127,6 +128,7 @@
                                {
                                    UpdateTargetId = "targetDiv",
                                    HttpMethod = "Get",
+                                   LoadingElementId = "ajax-loader",
                                    InsertionMode = InsertionMode.Replace,
                                    Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
 
@@ -149,6 +151,7 @@
                            {
                                UpdateTargetId = "targetDiv",
                                HttpMethod = "Get",
+                               LoadingElementId = "ajax-loader",
                                InsertionMode = InsertionMode.Replace,
                                Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", pageCount.ToString()) : (Url + "page=" + pageCount.ToString()))
 
@@ -165,6 +168,7 @@
                            {
                                UpdateTargetId = "targetDiv",
                                HttpMethod = "Get",
+                               LoadingElementId = "ajax-loader",
                                InsertionMode = InsertionMode.Replace,
                                Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", num2.ToString()) : (Url + "page=" + num2.ToString()))
 
@@ -183,6 +187,7 @@
                            {
                                UpdateTargetId = "targetDiv",
                                HttpMethod = "Get",
+                               LoadingElementId = "ajax-loader",
                                InsertionMode = InsertionMode.Replace,
                                Url = ((Url.IndexOf("@p@") >= 0) ? Url.Replace("@p@", pageCount.ToString()) : (Url + "page=" + pageCount.ToString()))
 
@@ -198,7 +203,46 @@
                 </div>
                             }
         }
-
     </div>
 </div>
-<script src="~/Content/js/admin/Common_Part.js"></script>
+
+@{
+    if (Request.IsAjaxRequest())
+    {
+        <script src="~/Content/js/admin/datatables/colResizable-1.5.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                //初始化CheckBox
+                $(".icheck_box").iCheck({
+                    checkboxClass: 'icheckbox_minimal-red',
+                    radioClass: 'iradio_minimal-red',
+                    increaseArea: '20%' // optional
+                });
+                //全选 反选
+                $('input[name="checkall"]').on('ifChecked', function (event) {
+                    $("input[name='checkbox_name']").iCheck('check');
+                });
+                $('input[name="checkall"]').on('ifUnchecked', function (event) {
+                    $("input[name='checkbox_name']").iCheck('uncheck');
+                });
+                //工具提示
+                $("[data-toggle='tooltip']").tooltip();
+                //使用col插件实现表格头宽度拖拽
+                $(".table").colResizable();
+                //点击表格，选中/取消 复选框
+                $("#dataTable tr").slice(1).each(function (g) {
+                    var p = $(this);
+                    $(this).children().slice(1).click(function () {
+                        if ($($(p.children()[0]).children()[0]).children().eq(0).prop("checked")) {
+                            $($(p.children()[0]).children()[0]).iCheck("uncheck");
+                        }
+                        else {
+                            $($(p.children()[0]).children()[0]).iCheck("check");
+                        }
+                    });
+                });
+            });
+        </script>
+    }
+}
+

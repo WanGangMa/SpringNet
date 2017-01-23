@@ -1,9 +1,6 @@
-using System;
-using System.Text;
-
 namespace Common
 {
-	public class ConvertHzToPz
+    public class ConvertHzToPz
 	{
 		private static readonly string[][] _Allhz = new string[][]
 		{

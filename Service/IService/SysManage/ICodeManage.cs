@@ -7,7 +7,7 @@ namespace Service.IService
     /// Service层代码配置接口
     ///  2016-05-22
     /// </summary>
-    public interface ICodeManage : IRepository<Domain.SYS_CODE>
+    public interface ICodeManage : IRepository<Domain.SYS_CODE>, IAutofac
     {
         /// <summary>
         /// 根据编码类型获取编码集合

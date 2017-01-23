@@ -1,86 +1,58 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using Domain;
 using Service.IService;
 
 namespace Service.ServiceImp
 {
-    public class UserManage : RepositoryBase<Domain.SYS_USER>, IService.IUserManage
+    public class UserManage : RepositoryBase<SYS_USER>, IUserManage
     {
-        private IUserInfoManage UserInfoManage
+
+        #region 容器
+        IUserInfoManage UserInfoManage;
+        IUserRoleManage UserRoleManage;
+        IUserPermissionManage UserPermissionManage;
+        IPostUserManage PostUserManage;
+        IPermissionManage PermissionManage;
+        IDepartmentManage DepartmentManage;
+        ISystemManage SystemManage;
+        IUserOnlineManage UserOnlineManage;
+        IChatMessageManage ChatMessageManage;
+        IProjectTeamManage ProjectTeamManage;
+        IUserDepartmentManage UserDepartmentManage;
+
+        public UserManage
+            (
+                IUserInfoManage UserInfoManage,
+                IUserRoleManage UserRoleManage,
+                IUserPermissionManage UserPermissionManage,
+                IPostUserManage PostUserManage,
+                IPermissionManage PermissionManage,
+                IDepartmentManage DepartmentManage,
+                ISystemManage SystemManage,
+                IUserOnlineManage UserOnlineManage,
+                IChatMessageManage ChatMessageManage,
+                IProjectTeamManage ProjectTeamManage,
+                IUserDepartmentManage UserDepartmentManage
+            )
         {
-            get;
-            set;
+            this.UserInfoManage = UserInfoManage;
+            this.UserRoleManage = UserRoleManage;
+            this.UserPermissionManage = UserPermissionManage;
+            this.PostUserManage = PostUserManage;
+            this.PermissionManage = PermissionManage;
+            this.DepartmentManage = DepartmentManage;
+            this.SystemManage = SystemManage;
+            this.UserOnlineManage = UserOnlineManage;
+            this.ChatMessageManage = ChatMessageManage;
+            this.ProjectTeamManage = ProjectTeamManage;
+            this.UserDepartmentManage = UserDepartmentManage;
         }
 
-        private IUserRoleManage UserRoleManage
-        {
-            get;
-            set;
-        }
+        #endregion 
 
-        private IUserPermissionManage UserPermissionManage
-        {
-            get;
-            set;
-        }
-
-        private IPostUserManage PostUserManage
-        {
-            get;
-            set;
-        }
-
-        private IPermissionManage PermissionManage
-        {
-            get;
-            set;
-        }
-
-        private IDepartmentManage DepartmentManage
-        {
-            get;
-            set;
-        }
-
-        private ISystemManage SystemManage
-        {
-            get;
-            set;
-        }
-
-        private IUserOnlineManage UserOnlineManage
-        {
-            get;
-            set;
-        }
-
-        private IChatMessageManage ChatMessageManage
-        {
-            get;
-            set;
-        }
-
-        private IProjectTeamManage ProjectTeamManage
-        {
-            get;
-            set;
-        }
-
-        private IUserDepartmentManage UserDepartmentManage
-        {
-            get;
-            set;
-        }
         /// <summary>
         /// 管理用户登录验证
         ///  2016-05-12
@@ -88,7 +60,7 @@ namespace Service.ServiceImp
         /// <param name="useraccount">用户名</param>
         /// <param name="password">加密密码（AES）</param>
         /// <returns></returns>
-        public Domain.SYS_USER UserLogin(string useraccount, string password)
+        public SYS_USER UserLogin(string useraccount, string password)
         {
             var entity = this.Get(p => p.ACCOUNT == useraccount);
 
@@ -107,9 +79,9 @@ namespace Service.ServiceImp
         public bool IsAdmin(int userId)
         {
             //通过用户ID获取角色
-            Domain.SYS_USER entity = this.Get(p => p.ID == userId);
+            SYS_USER entity = this.Get(p => p.ID == userId);
             if (entity == null) return false;
-            var roles = entity.SYS_USER_ROLE.Select(p => new Domain.SYS_ROLE
+            var roles = entity.SYS_USER_ROLE.Select(p => new SYS_ROLE
             {
                 ID = p.SYS_ROLE.ID
             });
@@ -218,7 +190,7 @@ namespace Service.ServiceImp
         /// <summary>
         /// 根据用户信息获取用户所有的权限
         /// </summary>
-        private List<Domain.SYS_PERMISSION> GetPermissionByUser(Domain.SYS_USER users)
+        private List<Domain.SYS_PERMISSION> GetPermissionByUser(SYS_USER users)
         {
             //1、超级管理员拥有所有权限
             if (IsAdmin(users.ID))
@@ -238,7 +210,7 @@ namespace Service.ServiceImp
         /// <summary>
         /// 根据用户构造用户基本信息
         /// </summary>
-        public Account GetAccountByUser(Domain.SYS_USER user)
+        public Account GetAccountByUser(SYS_USER user)
         {
             if (user == null) return null;
             //用户授权--->注意用户的授权是包括角色权限与自身权限的
@@ -254,7 +226,14 @@ namespace Service.ServiceImp
             //用户模块
             var module = permission.Select(p => p.SYS_MODULE).ToList().Distinct(new ModuleDistinct()).ToList();
 
-            var systemid = new List<string> { "fddeab19-3588-4fe1-83b6-c15d4abb942d" };
+            var systemid = new List<string> {
+                "fddeab19-3588-4fe1-83b6-c15d4abb942d",
+                "de6bfe62-2816-44a8-b43a-cc09a35b489c",
+                "762598cf-de60-449a-97dc-a2461eafb731",
+                "67255eaf-34c2-492f-9ca7-72a77649609f",
+                "39defc64-dfa3-4cde-b0dc-4559e66bd968",
+                "022d0a74-1b38-4116-a2cb-b44a7269c0cb"
+            };
             Account account = new Account()
             {
                 Id = user.ID,
@@ -273,6 +252,7 @@ namespace Service.ServiceImp
                 Levels = user.LEVELS,
                 PinYin = user.PINYIN1,
             };
+
             return account;
         }
 

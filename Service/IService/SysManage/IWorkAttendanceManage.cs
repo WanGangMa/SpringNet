@@ -1,9 +1,8 @@
 ﻿using Domain;
-using System;
 
 namespace Service.IService
 {
-    public interface IWorkAttendanceManage : IRepository<COM_WORKATTENDANCE>
+    public interface IWorkAttendanceManage : IRepository<COM_WORKATTENDANCE>, IAutofac
     {
     }
 }

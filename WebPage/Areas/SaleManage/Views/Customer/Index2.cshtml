@@ -1,0 +1,29 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Index2";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index2</h2>
+<ul>
+    <li>@Model.i</li>
+    @{
+        foreach (var item in Model.list)
+        {
+            <li>@item.a</li>
+            <li>@item.b</li>
+            <li>@item.c</li>
+            <li>————</li>
+        }
+    }
+</ul>
+@using (Html.BeginForm("index2", "customer", FormMethod.Post))
+{
+
+    <input type="checkbox" name="a" value="false" />
+
+    <input type="submit" value="sb" />
+}
+
+
+

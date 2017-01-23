@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Common.PageInfo
+<div class="wrapper wrapper-content animate fadeInUp">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>客户管理</h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-primary btn-xs p210" id="insert" action="add"><i class="fa fa-plus-circle fa-fw"></i> 添加新客户</a>
+                        <a class="btn btn-warning btn-xs p210" id="modify" action="edit"><i class="fa fa-pencil fa-fw"></i> 编辑客户</a>
+                        <a class="btn btn-danger btn-xs p210" id="delete" action="remove"><i class="fa fa-trash-o fa-fw"></i> 删除客户</a>
+                        <a class="reload-link" style="color: #c4c4c4" href="javascript:dig.reload()" data-toggle="tooltip" data-placement="left" title="刷新">
+                            <i class="fa fa-repeat fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    @using (Ajax.BeginForm("index", null, new AjaxOptions()
+                    {
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "targetDiv ",
+                        OnBegin= "$.loading(true)",
+                        OnComplete = "$.loading(false)"
+                    }, new { @id = "form", @class = "form-horizontal", @method = "get" }))
+                    {
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <label>选择省份：</label>
+                                @Html.DropDownList("province", (SelectList)ViewData["procList"], "請選擇", new { @class = "form-control input-sm  input-s-sm inline", @onchange = "$('#form').submit()" })
+
+                                <label>客户类型：</label>
+                                @Html.DropDownList("customerState", (List<SelectListItem>)ViewBag.stateList, "請選擇", new { @class = "form-control input-sm  input-s-sm inline", @onchange = "$('#form').submit()" })
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    @Html.TextBox("Search", null, new { @class = "input-sm form-control", @placeholder = "请输入查询关键词" })
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary"> 搜索</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div id="targetDiv" name="targetDiv">
+                        @{Html.RenderPartial("DataView");}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <iframe src="/sys/bussinesscustomer/customerinfo/0" style="width:100%;" id="DeployBase" name="DeployBase" frameborder="0" scrolling="auto" onload="iFrameHeight()" allowtransparency="true"></iframe>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            //添加新用户
+            $("#insert").click(function () {
+                myLayer.open({title:"添加客户",url:"/bns/customer/detail"})
+            });
+            //列表选择修改
+            $('#modify').click(function () {
+                var vals = '';
+                var num = 0;
+                $('input[name="checkbox_name"]:checked').each(function () {
+                    vals = $(this).val();
+                    num++;
+                });
+                if (!vals) {
+                    dig.error("对不起，请选中您要操作的记录！");
+                    return;
+                }
+                if (num > 1) {
+                    dig.error("对不起，每次只能修改一条记录！");
+                    return;
+                }
+                dig.addPage("编辑客户", "/Sys/BussinessCustomer/detail/" + vals, 800, 450, function () {
+                    if (this.returnValue == 'yes') {
+                        location.reload();
+                    }
+                });
+            });
+        });
+        //跳转修改
+        function EditCustomer(n) {
+            dig.addPage("编辑客户", "/Sys/BussinessCustomer/detail/" + n, 800, 450, function () {
+                if (this.returnValue == 'yes') {
+                    location.reload();
+                }
+            });
+        }
+        //详细信息
+        function DetailInfo(n) {
+            $("#DeployBase").prop("src", "/sys/bussinesscustomer/customerinfo/" + n);
+        }
+        function iFrameHeight() {
+            var ifm = document.getElementById("DeployBase");
+            var subWeb = document.frames ? document.frames["DeployBase"].document : ifm.contentDocument;
+            if (ifm != null && subWeb != null) {
+                ifm.height = subWeb.body.scrollHeight < 500 ? subWeb.body.scrollHeight + 100 : subWeb.body.scrollHeight;
+            }
+        }
+
+    </script>
+}

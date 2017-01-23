@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Common;
 using Service.IService;
@@ -11,24 +9,34 @@ namespace WebPage.Areas.SysManage.Controllers
 {
     public class RoleController : BaseController
     {
-        IRoleManage RoleManage { get; set; }
+        IRoleManage RoleManage ;
+        IUserRoleManage UserRoleManage ;
+        IRolePermissionManage RolePermissionManage ;
+        ISystemManage SystemManage ;
 
-        IUserRoleManage UserRoleManage { get; set; }
-
-        IRolePermissionManage RolePermissionManage { get; set; }
-
-        ISystemManage SystemManage { get; set; }        
+        public RoleController
+            (
+                IRoleManage RoleManage ,
+                IUserRoleManage UserRoleManage,
+                IRolePermissionManage RolePermissionManage,
+                ISystemManage SystemManage
+            )
+        {
+            this.RoleManage = RoleManage;
+            this.UserRoleManage = UserRoleManage;
+            this.RolePermissionManage = RolePermissionManage;
+            this.SystemManage = SystemManage;
+        }   
         /// <summary>
         /// 加载主页
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "View")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "View")]
         public ActionResult Index()
         {
             try
             {
                 #region 处理查询参数
-
                 //系统ID
                 string System = Request.QueryString["System"];
                 ViewData["System"] = System;
@@ -53,7 +61,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// 加载详情
         /// </summary>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "Detail")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "Detail")]
         public ActionResult Detail(int? id)
         {
             var _entity = new Domain.SYS_ROLE() { ISCUSTOM = false };
@@ -77,7 +85,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 保存角色
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "Add,Edit")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "Add,Edit")]
         public ActionResult Save(Domain.SYS_ROLE entity)
         {
             bool isEdit = false;
@@ -165,7 +173,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 删除角色
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "Remove")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "Remove")]
         public ActionResult Delete(string idList)
         {
             var json = new JsonHelper() { Msg = "删除角色完毕", Status = "n" };
@@ -205,7 +213,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <returns></returns>
-        [UserAuthorizeAttribute(ModuleAlias = "User", OperaAction = "AllocationRole")]
+        [UserAuthorize(ModuleAlias = "User", OperaAction = "AllocationRole")]
         public ActionResult RoleCall(int? id)
         {
             try
@@ -234,7 +242,7 @@ namespace WebPage.Areas.SysManage.Controllers
         /// <summary>
         /// 设置用户角色
         /// </summary>
-        [UserAuthorizeAttribute(ModuleAlias = "Role", OperaAction = "Allocation")]
+        [UserAuthorize(ModuleAlias = "Role", OperaAction = "Allocation")]
         public ActionResult UserRole()
         {
             var json = new JsonHelper()
@@ -299,7 +307,7 @@ namespace WebPage.Areas.SysManage.Controllers
             //排序
             query = query.OrderByDescending(p => p.CREATEDATE);
             //分页
-            var result = this.RoleManage.Query(query, page, pagesize);
+            var result = this.RoleManage.Query(query, pageindex, pagesize);
 
             var list = result.List.Select(p => new
             {

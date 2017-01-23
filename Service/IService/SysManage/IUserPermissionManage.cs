@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Service.IService
+﻿namespace Service.IService
 {
     /// <summary>
     /// Service层用户授权接口
     ///  2016-05-19
     /// </summary>
-    public interface IUserPermissionManage : IRepository<Domain.SYS_USER_PERMISSION>
+    public interface IUserPermissionManage : IRepository<Domain.SYS_USER_PERMISSION>, IAutofac
     {
         /// <summary>
         /// 设置用户权限
